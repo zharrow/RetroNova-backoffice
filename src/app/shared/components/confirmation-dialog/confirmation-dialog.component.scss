@@ -1,0 +1,14 @@
+.confirmation-dialog {
+  padding: 1rem;
+  
+  h2 {
+    margin-top: 0;
+  }
+  
+  .confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+}

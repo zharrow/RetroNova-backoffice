@@ -1,0 +1,17 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  
+  .main-container {
+    display: flex;
+    flex: 1;
+    
+    .content-container {
+      flex: 1;
+      padding: 1.5rem;
+      background-color: var(--surface-ground);
+      overflow-y: auto;
+    }
+  }
+}
