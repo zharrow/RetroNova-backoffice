@@ -198,4 +198,8 @@ interface PartyDisplay extends Party {
         font-weight: 600;
       }
     }
-    
+    `],
+  providers: [MessageService]
+})
+export class PartiesListComponent {
+}

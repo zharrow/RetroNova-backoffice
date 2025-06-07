@@ -1,41 +1,74 @@
+// src/app/features/dashboard/pages/home/home.component.scss
+
 .dashboard-container {
   h1 {
     margin-bottom: 2rem;
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
   }
   
   .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    animation: fadeIn 0.4s ease-out 0.1s both;
+  }
+}
+
+:host ::ng-deep {
+  .dashboard-card {
+    transition: transform 0.2s, box-shadow 0.2s;
     
-    .dashboard-card {
-      ::ng-deep {
-        .p-card-body {
-          padding: 1.5rem;
-          text-align: center;
-        }
-        
-        .card-header {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          justify-content: center;
-          padding: 1rem;
-          background-color: var(--surface-section);
-          
-          i {
-            font-size: 1.5rem;
-          }
-          
-          h3 {
-            margin: 0;
-          }
-        }
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .p-card-header {
+      padding: 0;
+    }
+    
+    .p-card-body {
+      padding: 0;
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem;
+      color: white;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
+      
+      i {
+        font-size: 2rem;
+        opacity: 0.9;
       }
+      
+      h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+      text-align: center;
       
       h2 {
         font-size: 2.5rem;
+        font-weight: 700;
         margin: 1rem 0;
+        color: var(--text-color);
       }
       
       a {
@@ -43,11 +76,34 @@
         color: var(--primary-color);
         text-decoration: none;
         font-weight: 500;
+        transition: color 0.2s;
         
         &:hover {
+          color: var(--primary-color);
           text-decoration: underline;
         }
       }
     }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .dashboard-container {
+    .dashboard-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Animation d'apparition
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

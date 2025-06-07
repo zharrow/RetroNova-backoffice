@@ -1,13 +1,36 @@
 /* Importation des styles PrimeNG */
-// @import "node_modules/primeng/resources/themes/lara-light-blue/theme.css";
-// @import "node_modules/primeng/resources/primeng.min.css";
-// @import "node_modules/primeicons/primeicons.css";
+@import "@primeng/themes/aura/theme.css";
+@import "primeng/resources/primeng.min.css";
+@import "primeicons/primeicons.css";
 
-/* Si les importations ci-dessus ne fonctionnent toujours pas, essayez celles-ci: */
-// @import "primeng/resources/themes/lara-light-blue/theme.css";
-// @import "primeng/resources/primeng.min.css";
-// @import "primeicons/primeicons.css";
+/* Importation des fichiers SCSS personnalisés */
+@import "styles/variables";
+@import "styles/mixins";
+@import "styles/animations";
 
+/* Variables CSS personnalisées */
+:root {
+  --primary-color: #{$primary-color};
+  --primary-color-text: #{$primary-color-text};
+  --surface-ground: #{$surface-ground};
+  --surface-section: #{$surface-section};
+  --surface-card: #{$surface-card};
+  --surface-hover: #{$surface-hover};
+  --surface-border: #{$surface-border};
+  --text-color: #{$text-color};
+  --text-color-secondary: #{$text-color-secondary};
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Couleurs additionnelles */
+  --blue-50: #eff6ff;
+  --blue-500: #3b82f6;
+  --blue-900: #1e3a8a;
+  --green-500: #{$success-color};
+  --yellow-500: #{$warning-color};
+  --red-500: #{$danger-color};
+}
+
+/* Reset global */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,65 +41,96 @@ body {
   font-family: var(--font-family);
   background-color: var(--surface-ground);
   color: var(--text-color);
+  line-height: 1.6;
 }
 
-// Utilitaires
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mt-5 { margin-top: 2rem; }
+/* Utilitaires de marge */
+.mt-1 { margin-top: $spacing-xs; }
+.mt-2 { margin-top: $spacing-sm; }
+.mt-3 { margin-top: $spacing-md; }
+.mt-4 { margin-top: $spacing-lg; }
+.mt-5 { margin-top: $spacing-xl; }
 
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-.mb-5 { margin-bottom: 2rem; }
+.mb-1 { margin-bottom: $spacing-xs; }
+.mb-2 { margin-bottom: $spacing-sm; }
+.mb-3 { margin-bottom: $spacing-md; }
+.mb-4 { margin-bottom: $spacing-lg; }
+.mb-5 { margin-bottom: $spacing-xl; }
 
-.p-1 { padding: 0.25rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 1rem; }
-.p-4 { padding: 1.5rem; }
-.p-5 { padding: 2rem; }
+/* Utilitaires de padding */
+.p-1 { padding: $spacing-xs; }
+.p-2 { padding: $spacing-sm; }
+.p-3 { padding: $spacing-md; }
+.p-4 { padding: $spacing-lg; }
+.p-5 { padding: $spacing-xl; }
 
-// Styles de page communs
+/* Utilitaires de texte */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.font-bold { font-weight: 600; }
+
+/* Utilitaires de couleur */
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--text-color-secondary); }
+.text-green-500 { color: var(--green-500); }
+.text-red-500 { color: var(--red-500); }
+.text-yellow-500 { color: var(--yellow-500); }
+
+/* Layout utilities */
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.justify-content-end { justify-content: flex-end; }
+.align-items-center { align-items: center; }
+.gap-1 { gap: $spacing-xs; }
+.gap-2 { gap: $spacing-sm; }
+.gap-3 { gap: $spacing-md; }
+
+/* Styles de page communs */
 .page-container {
+  animation: fadeIn 0.3s ease-out;
+  
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: $spacing-lg;
     
     h1 {
       margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
     }
     
     .page-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: $spacing-sm;
     }
   }
   
   .page-content {
-    background-color: var(--surface-card);
-    border-radius: 6px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    @include card();
   }
 }
 
-// Styles de formulaire communs
+/* Styles de formulaire communs */
 .form-container {
   max-width: 800px;
   margin: 0 auto;
   
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: $spacing-lg;
     
     label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: $spacing-sm;
       font-weight: 500;
+      color: var(--text-color);
     }
     
     .p-inputtext, 
@@ -90,7 +144,51 @@ body {
   .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 2rem;
+    gap: $spacing-sm;
+    margin-top: $spacing-xl;
+  }
+}
+
+/* Override PrimeNG pour cohérence */
+.p-button {
+  font-family: var(--font-family);
+  font-weight: 500;
+  transition: all $transition-base;
+}
+
+.p-datatable {
+  font-size: 0.875rem;
+  
+  .p-datatable-thead > tr > th {
+    background-color: var(--surface-ground);
+    border-color: var(--surface-border);
+    font-weight: 600;
+  }
+  
+  .p-datatable-tbody > tr {
+    transition: background-color $transition-fast;
+    
+    &:hover {
+      background-color: var(--surface-hover);
+    }
+  }
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-ground);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--text-color-secondary);
   }
 }
