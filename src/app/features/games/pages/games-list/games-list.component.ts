@@ -86,14 +86,14 @@ import { Game } from '../../../../core/models/game.model';
               </td>
               <td>
                 <div class="flex justify-content-center gap-2">
-                  <button pButton pRipple type="button" icon="pi pi-pencil" 
+                  <p-button pButton pRipple type="button" icon="pi pi-pencil" 
                           class="p-button-rounded p-button-text p-button-success"
                           pTooltip="Éditer" tooltipPosition="top"
-                          [routerLink]="['/games/edit', game.id]"></button>
-                  <button pButton pRipple type="button" icon="pi pi-trash" 
+                          [routerLink]="['/games/edit', game.id]"></p-button>
+                  <p-button pButton pRipple type="button" icon="pi pi-trash" 
                           class="p-button-rounded p-button-text p-button-danger"
                           pTooltip="Supprimer" tooltipPosition="top"
-                          (click)="confirmDelete(game)"></button>
+                          (click)="confirmDelete(game)"></p-button>
                 </div>
               </td>
             </tr>

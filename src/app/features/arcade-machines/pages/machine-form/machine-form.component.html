@@ -1,0 +1,87 @@
+<div class="page-container">
+      <div class="page-header">
+        <h1>{{ isEditMode ? 'Modifier la borne' : 'Nouvelle borne d\'arcade' }}</h1>
+      </div>
+      
+      <div class="form-container">
+        <p-card>
+          <app-loader *ngIf="loading"></app-loader>
+          
+          <form [formGroup]="machineForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+            <div class="form-grid">
+              <!-- Nom de la borne -->
+              <div class="form-group col-12">
+                <label for="name" class="required">Nom de la borne</label>
+                <input id="name" type="text" pInputText formControlName="name"
+                       [class.ng-invalid]="isFieldInvalid('name')"
+                       placeholder="Ex: Borne Rétro Zone 1" />
+                <small class="p-error" *ngIf="isFieldInvalid('name')">
+                  Le nom de la borne est requis
+                </small>
+              </div>
+              
+              <!-- Description -->
+              <div class="form-group col-12">
+                <label for="description">Description</label>
+                <textarea id="description" pInputTextarea formControlName="description"
+                          rows="3" placeholder="Description de la borne (optionnel)">
+                </textarea>
+              </div>
+              
+              <!-- Localisation -->
+              <div class="form-group col-12">
+                <label for="localisation">Localisation</label>
+                <input id="localisation" type="text" pInputText formControlName="localisation"
+                       placeholder="Ex: Salle principale, près de l'entrée" />
+              </div>
+              
+              <!-- Jeux -->
+              <div class="form-group col-6">
+                <label for="game1_id" class="required">Jeu principal</label>
+                <p-dropdown id="game1_id" formControlName="game1_id"
+                           [options]="gameOptions" placeholder="Sélectionner un jeu"
+                           optionLabel="label" optionValue="value"
+                           [filter]="true" filterBy="label"
+                           [showClear]="true"
+                           [class.ng-invalid]="isFieldInvalid('game1_id')">
+                </p-dropdown>
+                <small class="p-error" *ngIf="isFieldInvalid('game1_id')">
+                  Le jeu principal est requis
+                </small>
+              </div>
+              
+              <div class="form-group col-6">
+                <label for="game2_id">Jeu secondaire (optionnel)</label>
+                <p-dropdown id="game2_id" formControlName="game2_id"
+                           [options]="filteredGame2Options" placeholder="Sélectionner un jeu"
+                           optionLabel="label" optionValue="value"
+                           [filter]="true" filterBy="label"
+                           [showClear]="true"
+                           [disabled]="!machineForm.get('game1_id')?.value">
+                </p-dropdown>
+                <small class="text-muted" *ngIf="!machineForm.get('game1_id')?.value">
+                  Sélectionnez d'abord le jeu principal
+                </small>
+              </div>
+            </div>
+            
+            <!-- Section d'information -->
+            <div class="info-section" *ngIf="isEditMode">
+              <p class="info-text">
+                <i class="pi pi-info-circle"></i>
+                Les modifications seront appliquées immédiatement à toutes les parties en cours sur cette borne.
+              </p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="form-actions">
+              <button pButtonIcon pRipple type="button" label="Annuler" 
+                      class="p-button-text" routerLink="/arcade-machines"></button>
+              <button pButtonIcon pRipple type="submit" label="Enregistrer"
+                      loading="submitting" [disabled]="machineForm.invalid">
+              </button>
+            </div>
+          </form>
+        </p-card>
+      </div>
+    </div>

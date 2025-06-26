@@ -31,7 +31,8 @@ import { Table } from 'primeng/table';
   template: `
     <div class="page-container">
       <div class="page-header">
-        <h1>Bornes d'arcade</h1>
+        <h1><i class="pi pi-check" style="font-size: 2rem;"></i>
+Bornes d'arcade</h1>
         <div class="page-actions">
           <button pButton pRipple type="button" icon="pi pi-plus" label="Nouvelle borne" 
                   class="p-button-success" routerLink="/arcade-machines/new"></button>
@@ -41,7 +42,7 @@ import { Table } from 'primeng/table';
       <div class="page-content">
         <div class="search-container">
           <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
+            <i class="pi fas pi-search"></i>
             <input pInputText type="text" placeholder="Rechercher..." 
                   (input)="applyFilterGlobal($event, 'contains')" />
           </span>
@@ -72,18 +73,18 @@ import { Table } from 'primeng/table';
               <td>{{getGameName(machine.game2_id)}}</td>
               <td>
                 <div class="flex justify-content-end gap-2">
-                  <button pButton pRipple type="button" icon="pi pi-eye" 
+                  <p-button pButton pRipple type="button" icon="pi pi-eye" 
                           class="p-button-rounded p-button-text p-button-info"
                           pTooltip="Voir" tooltipPosition="top"
-                          [routerLink]="['/arcade-machines', machine.id]"></button>
-                  <button pButton pRipple type="button" icon="pi pi-pencil" 
+                          [routerLink]="['/arcade-machines', machine.id]"><WindowMaximizeIcon pButtonIcon /></p-button>
+                  <p-button pButton pRipple type="button" icon="pi pi-pencil" 
                           class="p-button-rounded p-button-text p-button-success"
                           pTooltip="Éditer" tooltipPosition="top"
-                          [routerLink]="['/arcade-machines/edit', machine.id]"></button>
-                  <button pButton pRipple type="button" icon="pi pi-trash" 
+                          [routerLink]="['/arcade-machines/edit', machine.id]"></p-button>
+                  <p-button pButton pRipple type="button" icon="pi pi-trash" 
                           class="p-button-rounded p-button-text p-button-danger"
                           pTooltip="Supprimer" tooltipPosition="top"
-                          (click)="confirmDelete(machine)"></button>
+                          (click)="confirmDelete(machine)"></p-button>
                 </div>
               </td>
             </tr>

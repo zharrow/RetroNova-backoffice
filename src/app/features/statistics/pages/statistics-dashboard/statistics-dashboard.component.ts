@@ -68,7 +68,7 @@ interface PopularGame {
           <p-calendar [(ngModel)]="dateRange" selectionMode="range" 
                      [readonlyInput]="true" placeholder="Sélectionner une période">
           </p-calendar>
-          <button pButton pRipple type="button" icon="pi pi-refresh" 
+          <button pButtonIc pRipple type="button" icon="pi pi-refresh" 
                   label="Actualiser" (click)="refreshData()">
           </button>
         </div>

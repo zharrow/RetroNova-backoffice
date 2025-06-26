@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputTextarea } from 'primeng/inputtextarea';
 import { DropdownModule } from 'primeng/dropdown';
 import { CardModule } from 'primeng/card';
 import { RippleModule } from 'primeng/ripple';
@@ -30,179 +30,14 @@ interface GameOption {
     RouterModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule,
+    InputTextarea,
     DropdownModule,
     CardModule,
     RippleModule,
     LoaderComponent
   ],
-  template: `
-    <div class="page-container">
-      <div class="page-header">
-        <h1>{{ isEditMode ? 'Modifier la borne' : 'Nouvelle borne d\'arcade' }}</h1>
-      </div>
-      
-      <div class="form-container">
-        <p-card>
-          <app-loader *ngIf="loading"></app-loader>
-          
-          <form [formGroup]="machineForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
-            <div class="form-grid">
-              <!-- Nom de la borne -->
-              <div class="form-group col-12">
-                <label for="name" class="required">Nom de la borne</label>
-                <input id="name" type="text" pInputText formControlName="name"
-                       [class.ng-invalid]="isFieldInvalid('name')"
-                       placeholder="Ex: Borne Rétro Zone 1" />
-                <small class="p-error" *ngIf="isFieldInvalid('name')">
-                  Le nom de la borne est requis
-                </small>
-              </div>
-              
-              <!-- Description -->
-              <div class="form-group col-12">
-                <label for="description">Description</label>
-                <textarea id="description" pInputTextarea formControlName="description"
-                          rows="3" placeholder="Description de la borne (optionnel)">
-                </textarea>
-              </div>
-              
-              <!-- Localisation -->
-              <div class="form-group col-12">
-                <label for="localisation">Localisation</label>
-                <input id="localisation" type="text" pInputText formControlName="localisation"
-                       placeholder="Ex: Salle principale, près de l'entrée" />
-              </div>
-              
-              <!-- Jeux -->
-              <div class="form-group col-6">
-                <label for="game1_id" class="required">Jeu principal</label>
-                <p-dropdown id="game1_id" formControlName="game1_id"
-                           [options]="gameOptions" placeholder="Sélectionner un jeu"
-                           optionLabel="label" optionValue="value"
-                           [filter]="true" filterBy="label"
-                           [showClear]="true"
-                           [class.ng-invalid]="isFieldInvalid('game1_id')">
-                </p-dropdown>
-                <small class="p-error" *ngIf="isFieldInvalid('game1_id')">
-                  Le jeu principal est requis
-                </small>
-              </div>
-              
-              <div class="form-group col-6">
-                <label for="game2_id">Jeu secondaire (optionnel)</label>
-                <p-dropdown id="game2_id" formControlName="game2_id"
-                           [options]="filteredGame2Options" placeholder="Sélectionner un jeu"
-                           optionLabel="label" optionValue="value"
-                           [filter]="true" filterBy="label"
-                           [showClear]="true"
-                           [disabled]="!machineForm.get('game1_id')?.value">
-                </p-dropdown>
-                <small class="text-muted" *ngIf="!machineForm.get('game1_id')?.value">
-                  Sélectionnez d'abord le jeu principal
-                </small>
-              </div>
-            </div>
-            
-            <!-- Section d'information -->
-            <div class="info-section" *ngIf="isEditMode">
-              <p class="info-text">
-                <i class="pi pi-info-circle"></i>
-                Les modifications seront appliquées immédiatement à toutes les parties en cours sur cette borne.
-              </p>
-            </div>
-            
-            <!-- Actions -->
-            <div class="form-actions">
-              <button pButton pRipple type="button" label="Annuler" 
-                      class="p-button-text" routerLink="/arcade-machines"></button>
-              <button pButton pRipple type="submit" label="Enregistrer"
-                      [loading]="submitting" [disabled]="machineForm.invalid">
-              </button>
-            </div>
-          </form>
-        </p-card>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .form-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1.5rem;
-    }
-    
-    .form-group {
-      &.col-12 { grid-column: span 12; }
-      &.col-6 { grid-column: span 6; }
-      
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        
-        &.required::after {
-          content: ' *';
-          color: var(--red-500);
-        }
-      }
-      
-      input, textarea, :host ::ng-deep p-dropdown {
-        width: 100%;
-      }
-      
-      small.p-error {
-        display: block;
-        margin-top: 0.25rem;
-      }
-      
-      .text-muted {
-        color: var(--text-color-secondary);
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-      }
-    }
-    
-    .info-section {
-      margin-top: 2rem;
-      padding: 1rem;
-      background-color: var(--blue-50);
-      border-radius: 6px;
-      border-left: 4px solid var(--blue-500);
-      
-      .info-text {
-        margin: 0;
-        color: var(--blue-900);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        
-        i {
-          color: var(--blue-500);
-        }
-      }
-    }
-    
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      margin-top: 2rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--surface-border);
-    }
-    
-    @media (max-width: 768px) {
-      .form-group.col-6 {
-        grid-column: span 12;
-      }
-    }
-  `]
+  templateUrl: './machine-form.component.html',
+  styleUrl: "./machine-form.component.scss",
 })
 export class MachineFormComponent implements OnInit {
   machineForm: FormGroup;
@@ -231,7 +66,9 @@ export class MachineFormComponent implements OnInit {
     this.machineId = this.route.snapshot.params['id'];
     this.isEditMode = !!this.machineId;
     
-    this.loadInitialData();
+    if (this.isEditMode && this.machineId) {
+      this.loadInitialData();
+    }
   }
   
   /**
@@ -269,33 +106,47 @@ export class MachineFormComponent implements OnInit {
   private loadInitialData(): void {
     this.loading = true;
     
-    const requests = [this.gamesService.getAllGames()];
-    
     if (this.isEditMode && this.machineId) {
-      requests.push(this.arcadeMachinesService.getMachineById(this.machineId));
-    }
-    
-    forkJoin(requests).subscribe({
-      next: ([games, machine]) => {
-        this.games = games as Game[];
-        this.setupGameOptions();
-        
-        if (machine) {
-          this.patchFormWithMachine(machine as ArcadeMachine);
+      // Charger les jeux et la machine en parallèle
+      forkJoin({
+        games: this.gamesService.getAllGames(),
+        machine: this.arcadeMachinesService.getMachineById(this.machineId)
+      }).subscribe({
+        next: ({ games, machine }) => {
+          this.games = games;
+          this.setupGameOptions();
+          this.patchFormWithMachine(machine);
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement des données:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Impossible de charger les données'
+          });
+          this.router.navigate(['/arcade-machines']);
         }
-        
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des données:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Impossible de charger les données'
-        });
-        this.router.navigate(['/arcade-machines']);
-      }
-    });
+      });
+    } else {
+      // Charger seulement les jeux
+      this.gamesService.getAllGames().subscribe({
+        next: (games) => {
+          this.games = games;
+          this.setupGameOptions();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement des jeux:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Impossible de charger les jeux'
+          });
+          this.loading = false;
+        }
+      });
+    }
   }
   
   /**

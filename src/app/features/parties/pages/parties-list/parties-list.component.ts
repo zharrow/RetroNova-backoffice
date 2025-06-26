@@ -9,8 +9,17 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TabViewModule } from 'primeng/tabview';
 import { MessageService } from 'primeng/api';
 import { PartiesService } from '../../../../core/services/parties.service';
+import { UsersService } from '../../../../core/services/users.service';
+import { GamesService } from '../../../../core/services/games.service';
+import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
 import { Party } from '../../../../core/models/party.model';
+import { User } from '../../../../core/models/user.model';
+import { Game } from '../../../../core/models/game.model';
+import { ArcadeMachine } from '../../../../core/models/arcade-machine.model';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { forkJoin } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
 interface PartyDisplay extends Party {
   player1_name?: string;
@@ -31,8 +40,10 @@ interface PartyDisplay extends Party {
     TagModule,
     TooltipModule,
     TabViewModule,
-    LoaderComponent
+    LoaderComponent,
+    DynamicDialogModule
   ],
+  providers: [MessageService, DialogService],
   template: `
     <div class="page-container">
       <div class="page-header">
@@ -75,7 +86,7 @@ interface PartyDisplay extends Party {
                     <td>{{ party.game_name || 'Jeu ' + party.game_id.substring(0, 8) }}</td>
                     <td>{{ party.machine_name || 'Borne ' + party.machine_id.substring(0, 8) }}</td>
                     <td>
-                      <p-tag [value]="party.password || 'N/A'" severity="info"></p-tag>
+                      <p-tag [value]="party.password?.toString() || 'N/A'" severity="info"></p-tag>
                     </td>
                     <td>
                       <i class="pi" [ngClass]="party.bar ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
@@ -198,8 +209,148 @@ interface PartyDisplay extends Party {
         font-weight: 600;
       }
     }
-    `],
-  providers: [MessageService]
+  `]
 })
-export class PartiesListComponent {
+export class PartiesListComponent implements OnInit {
+  @ViewChild('dtActive') dtActive?: Table;
+  @ViewChild('dtCompleted') dtCompleted?: Table;
+  
+  loading = true;
+  allParties: PartyDisplay[] = [];
+  activeParties: PartyDisplay[] = [];
+  completedParties: PartyDisplay[] = [];
+  
+  // Cache pour les entités
+  private users: User[] = [];
+  private games: Game[] = [];
+  private machines: ArcadeMachine[] = [];
+  
+  constructor(
+    private partiesService: PartiesService,
+    private usersService: UsersService,
+    private gamesService: GamesService,
+    private arcadeMachinesService: ArcadeMachinesService,
+    private messageService: MessageService,
+    private dialogService: DialogService
+  ) {}
+  
+  ngOnInit(): void {
+    this.loadData();
+  }
+  
+  /**
+   * Charge toutes les données nécessaires
+   */
+  private loadData(): void {
+    this.loading = true;
+    
+    forkJoin({
+      parties: this.partiesService.getAllParties(),
+      users: this.usersService.getAllUsers(),
+      games: this.gamesService.getAllGames(),
+      machines: this.arcadeMachinesService.getAllMachines()
+    }).subscribe({
+      next: (data) => {
+        this.users = data.users;
+        this.games = data.games;
+        this.machines = data.machines;
+        
+        // Enrichir les parties avec les noms
+        this.allParties = this.enrichParties(data.parties);
+        this.activeParties = this.allParties.filter(p => !p.done && !p.cancel);
+        this.completedParties = this.allParties.filter(p => p.done);
+        
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des données:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'Impossible de charger les parties'
+        });
+        this.loading = false;
+      }
+    });
+  }
+  
+  /**
+   * Enrichit les parties avec les noms des entités liées
+   */
+  private enrichParties(parties: Party[]): PartyDisplay[] {
+    return parties.map(party => {
+      const player1 = this.users.find(u => u.id === party.player1_id);
+      const player2 = this.users.find(u => u.id === party.player2_id);
+      const game = this.games.find(g => g.id === party.game_id);
+      const machine = this.machines.find(m => m.id === party.machine_id);
+      
+      const getPlayerName = (player: User | undefined): string | undefined => {
+        if (!player) return undefined;
+        const fullName = `${player.first_name || ''} ${player.last_name || ''}`.trim();
+        return fullName || player.publique_id;
+      };
+      
+      return {
+        ...party,
+        player1_name: getPlayerName(player1),
+        player2_name: getPlayerName(player2),
+        game_name: game?.name,
+        machine_name: machine?.name || undefined
+      };
+    });
+  }
+  
+  /**
+   * Applique un filtre global sur la table
+   */
+  applyFilterGlobal(event: Event, tableType: 'active' | 'completed'): void {
+    const value = (event.target as HTMLInputElement).value;
+    
+    if (tableType === 'active' && this.dtActive) {
+      this.dtActive.filterGlobal(value, 'contains');
+    } else if (tableType === 'completed' && this.dtCompleted) {
+      this.dtCompleted.filterGlobal(value, 'contains');
+    }
+  }
+  
+  /**
+   * Formate une date
+   */
+  formatDate(date: Date | string): string {
+    if (!date) return 'N/A';
+    const d = new Date(date);
+    return d.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  /**
+   * Détermine si un joueur est le gagnant
+   */
+  isWinner(party: Party, player: 1 | 2): boolean {
+    const p1Score = party.p1_score || 0;
+    const p2Score = party.p2_score || 0;
+    
+    if (p1Score === p2Score) return false;
+    
+    return player === 1 ? p1Score > p2Score : p2Score > p1Score;
+  }
+  
+  /**
+   * Affiche les détails d'une partie
+   */
+  viewPartyDetails(party: PartyDisplay): void {
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Détails de la partie',
+      detail: `Partie ${(party.id as string).substring(0, 8)} - ${party.game_name || 'Jeu inconnu'}`
+
+    });
+    
+    // TODO: Ouvrir un dialog avec les détails complets
+  }
 }
