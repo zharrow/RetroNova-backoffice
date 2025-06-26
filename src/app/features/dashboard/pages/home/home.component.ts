@@ -23,14 +23,14 @@ interface DashboardCard {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardModule, LoaderComponent],
+  imports: [CommonModule, RouterModule, CardModule],
   template: `
     <div class="dashboard-container">
       <h1>Tableau de bord</h1>
       
       @if (isLoading()) {
         <div class="loading-container">
-          <app-loader size="large"></app-loader>
+          <!-- <app-loader size="large"></app-loader> -->
         </div>
       }
       
