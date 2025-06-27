@@ -1,3 +1,5 @@
+// src/app/features/games/pages/games-list/games-list.component.ts
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -30,17 +32,22 @@ import { Game } from '../../../../core/models/game.model';
   template: `
     <div class="page-container">
       <div class="page-header">
-        <h1>Jeux</h1>
+        <h1>
+          <i class="fas fa-gamepad mr-2"></i>
+          Jeux
+        </h1>
         <div class="page-actions">
-          <button pButton pRipple type="button" icon="pi pi-plus" label="Nouveau jeu" 
-                  class="p-button-success" routerLink="/games/new"></button>
+          <button pButton pRipple type="button" label="Nouveau jeu" 
+                  class="p-button-success" routerLink="/games/new">
+            <i class="fas fa-plus mr-2"></i>
+          </button>
         </div>
       </div>
       
       <div class="page-content">
         <div class="search-container">
           <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
+            <i class="fas fa-search"></i>
             <input pInputText type="text" placeholder="Rechercher..." 
                   (input)="applyFilterGlobal($event, 'contains')" />
           </span>
@@ -56,16 +63,16 @@ import { Game } from '../../../../core/models/game.model';
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="name" style="width: 25%">
-                Nom <p-sortIcon field="name"></p-sortIcon>
+                Nom <i class="fas fa-sort ml-1 sort-icon"></i>
               </th>
               <th pSortableColumn="description" style="width: 35%">
-                Description <p-sortIcon field="description"></p-sortIcon>
+                Description <i class="fas fa-sort ml-1 sort-icon"></i>
               </th>
               <th pSortableColumn="nb_min_player" style="width: 15%">
-                Joueurs min <p-sortIcon field="nb_min_player"></p-sortIcon>
+                Joueurs min <i class="fas fa-sort ml-1 sort-icon"></i>
               </th>
               <th pSortableColumn="nb_max_player" style="width: 15%">
-                Joueurs max <p-sortIcon field="nb_max_player"></p-sortIcon>
+                Joueurs max <i class="fas fa-sort ml-1 sort-icon"></i>
               </th>
               <th style="width: 10%">Actions</th>
             </tr>
@@ -86,14 +93,18 @@ import { Game } from '../../../../core/models/game.model';
               </td>
               <td>
                 <div class="flex justify-content-center gap-2">
-                  <p-button pButton pRipple type="button" icon="pi pi-pencil" 
+                  <button pButton pRipple type="button" 
                           class="p-button-rounded p-button-text p-button-success"
                           pTooltip="Éditer" tooltipPosition="top"
-                          [routerLink]="['/games/edit', game.id]"></p-button>
-                  <p-button pButton pRipple type="button" icon="pi pi-trash" 
+                          [routerLink]="['/games/edit', game.id]">
+                    <i class="fas fa-pencil"></i>
+                  </button>
+                  <button pButton pRipple type="button" 
                           class="p-button-rounded p-button-text p-button-danger"
                           pTooltip="Supprimer" tooltipPosition="top"
-                          (click)="confirmDelete(game)"></p-button>
+                          (click)="confirmDelete(game)">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -101,7 +112,7 @@ import { Game } from '../../../../core/models/game.model';
           <ng-template pTemplate="emptymessage">
             <tr>
               <td colspan="5" class="text-center p-4">
-                <i class="pi pi-info-circle mr-2"></i>
+                <i class="fas fa-info-circle mr-2"></i>
                 Aucun jeu trouvé.
               </td>
             </tr>
@@ -126,6 +137,15 @@ import { Game } from '../../../../core/models/game.model';
       font-weight: 600;
     }
     
+    .mr-1 { margin-right: 0.25rem; }
+    .mr-2 { margin-right: 0.5rem; }
+    .ml-1 { margin-left: 0.25rem; }
+    
+    .sort-icon {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+    }
+    
     :host ::ng-deep {
       .p-tag {
         font-weight: 600;
@@ -133,6 +153,28 @@ import { Game } from '../../../../core/models/game.model';
       
       .p-datatable .p-datatable-tbody > tr > td {
         padding: 1rem;
+      }
+      
+      .p-button.p-button-rounded {
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        
+        i {
+          font-size: 0.875rem;
+        }
+      }
+      
+      .p-button.p-button-text:not(:disabled):hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-success:not(:disabled):hover {
+        background-color: rgba(76, 175, 80, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-danger:not(:disabled):hover {
+        background-color: rgba(244, 67, 54, 0.04);
       }
     }
   `]
@@ -189,7 +231,7 @@ export class GamesListComponent implements OnInit {
     this.confirmationService.confirm({
       message: `Êtes-vous sûr de vouloir supprimer le jeu "${game.name}" ?`,
       header: 'Confirmation de suppression',
-      icon: 'pi pi-exclamation-triangle',
+      icon: 'fas fa-exclamation-triangle',
       accept: () => this.deleteGame(game.id.toString()),
       reject: () => {}
     });

@@ -1,7 +1,9 @@
+// src/app/features/arcade-machines/pages/machines-list/machines-list.component.ts
+
 import { Component, OnInit, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TableModule } from 'primeng/table';
+import { TableModule, Table } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,9 +12,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
 import { ArcadeMachine } from '../../../../core/models/arcade-machine.model';
-import { UUID } from 'angular2-uuid';
-import { ViewChild } from '@angular/core';
-import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-machines-list',
@@ -31,18 +30,22 @@ import { Table } from 'primeng/table';
   template: `
     <div class="page-container">
       <div class="page-header">
-        <h1><i class="pi pi-check" style="font-size: 2rem;"></i>
-Bornes d'arcade</h1>
+        <h1>
+          <i class="fas fa-desktop mr-2"></i>
+          Bornes d'arcade
+        </h1>
         <div class="page-actions">
-          <button pButton pRipple type="button" icon="pi pi-plus" label="Nouvelle borne" 
-                  class="p-button-success" routerLink="/arcade-machines/new"></button>
+          <button pButton pRipple type="button" label="Nouvelle borne" 
+                  class="p-button-success" routerLink="/arcade-machines/new">
+            <i class="fas fa-plus mr-2"></i>
+          </button>
         </div>
       </div>
       
       <div class="page-content">
         <div class="search-container">
           <span class="p-input-icon-left">
-            <i class="pi fas pi-search"></i>
+            <i class="fas fa-search"></i>
             <input pInputText type="text" placeholder="Rechercher..." 
                   (input)="applyFilterGlobal($event, 'contains')" />
           </span>
@@ -56,9 +59,15 @@ Bornes d'arcade</h1>
                 currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} bornes">
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="name">Nom <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
-              <th pSortableColumn="localisation">Localisation <p-sortIcon field="localisation"></p-sortIcon></th>
+              <th pSortableColumn="name">
+                Nom <i class="fas fa-sort ml-1 sort-icon"></i>
+              </th>
+              <th pSortableColumn="description">
+                Description <i class="fas fa-sort ml-1 sort-icon"></i>
+              </th>
+              <th pSortableColumn="localisation">
+                Localisation <i class="fas fa-sort ml-1 sort-icon"></i>
+              </th>
               <th>Jeu 1</th>
               <th>Jeu 2</th>
               <th>Actions</th>
@@ -72,67 +81,118 @@ Bornes d'arcade</h1>
               <td>{{getGameName(machine.game1_id)}}</td>
               <td>{{getGameName(machine.game2_id)}}</td>
               <td>
-                <div class="flex justify-content-end gap-2">
-                  <p-button pButton pRipple type="button" icon="pi pi-eye" 
+                <div class="actions-container">
+                  <button pButton pRipple type="button" 
                           class="p-button-rounded p-button-text p-button-info"
                           pTooltip="Voir" tooltipPosition="top"
-                          [routerLink]="['/arcade-machines', machine.id]"><WindowMaximizeIcon pButtonIcon /></p-button>
-                  <p-button pButton pRipple type="button" icon="pi pi-pencil" 
+                          [routerLink]="['/arcade-machines', machine.id]">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button pButton pRipple type="button" 
                           class="p-button-rounded p-button-text p-button-success"
                           pTooltip="Éditer" tooltipPosition="top"
-                          [routerLink]="['/arcade-machines/edit', machine.id]"></p-button>
-                  <p-button pButton pRipple type="button" icon="pi pi-trash" 
+                          [routerLink]="['/arcade-machines/edit', machine.id]">
+                    <i class="fas fa-pencil"></i>
+                  </button>
+                  <button pButton pRipple type="button" 
                           class="p-button-rounded p-button-text p-button-danger"
                           pTooltip="Supprimer" tooltipPosition="top"
-                          (click)="confirmDelete(machine)"></p-button>
+                          (click)="confirmDelete(machine)">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </div>
               </td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="6" class="text-center">Aucune borne d'arcade trouvée.</td>
+              <td colspan="6" class="text-center">
+                <i class="fas fa-info-circle mr-2"></i>
+                Aucune borne d'arcade trouvée.
+              </td>
             </tr>
           </ng-template>
         </p-table>
       </div>
     </div>
     
-    <p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle">
-      <ng-template pTemplate="footer">
-        <button pButton icon="pi pi-times" label="Non" (click)="cd.onReject()"></button>
-        <button pButton icon="pi pi-check" label="Oui" (click)="cd.onAccept()"></button>
-      </ng-template>
-    </p-confirmDialog>
+    <p-confirmDialog></p-confirmDialog>
   `,
   styles: [`
     .search-container {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
     
-    :host ::ng-deep .p-paginator {
-      .p-paginator-current {
-        margin-left: auto;
-      }
+    .actions-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
     }
     
-    :host ::ng-deep .p-datatable.p-datatable-customers {
-      .p-datatable-header {
-        padding: 1rem;
-        text-align: left;
-        font-size: 1.5rem;
+    .mr-1 { margin-right: 0.25rem; }
+    .mr-2 { margin-right: 0.5rem; }
+    .ml-1 { margin-left: 0.25rem; }
+    
+    .sort-icon {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+    }
+    
+    :host ::ng-deep {
+      .p-button i {
+        font-size: 0.875rem;
       }
-
+      
+      .p-button.p-button-rounded {
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        
+        i {
+          font-size: 0.875rem;
+        }
+      }
+      
+      .p-button.p-button-text:not(:disabled):hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-info:not(:disabled):hover {
+        background-color: rgba(33, 150, 243, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-success:not(:disabled):hover {
+        background-color: rgba(76, 175, 80, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-danger:not(:disabled):hover {
+        background-color: rgba(244, 67, 54, 0.04);
+      }
+      
       .p-paginator {
-        padding: 1rem;
+        .p-paginator-current {
+          margin-left: auto;
+        }
       }
+      
+      .p-datatable.p-datatable-customers {
+        .p-datatable-header {
+          padding: 1rem;
+          text-align: left;
+          font-size: 1.5rem;
+        }
 
-      .p-datatable-thead > tr > th {
-        text-align: left;
-      }
+        .p-paginator {
+          padding: 1rem;
+        }
 
-      .p-dropdown-label:not(.p-placeholder) {
-        text-transform: uppercase;
+        .p-datatable-thead > tr > th {
+          text-align: left;
+        }
+
+        .p-dropdown-label:not(.p-placeholder) {
+          text-transform: uppercase;
+        }
       }
     }
     
@@ -174,9 +234,9 @@ Bornes d'arcade</h1>
   `]
 })
 export class MachinesListComponent implements OnInit {
-  @ViewChild('dt') table: Table | undefined;
+  readonly table = viewChild<Table>('dt');
   machines: ArcadeMachine[] = [];
-  loading: boolean = true;
+  loading = true;
   gamesCache: {[key: string]: string} = {};
   
   constructor(
@@ -209,14 +269,17 @@ export class MachinesListComponent implements OnInit {
   }
   
   applyFilterGlobal($event: any, stringVal: string) {
-    if (this.table) {
-      this.table.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+    const table = this.table();
+    if (table) {
+      table.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
     }
   }
   
   confirmDelete(machine: ArcadeMachine) {
     this.confirmationService.confirm({
       message: `Êtes-vous sûr de vouloir supprimer la borne "${machine.name}" ?`,
+      header: 'Confirmation',
+      icon: 'fas fa-exclamation-triangle',
       accept: () => {
         this.deleteMachine(machine.id.toString());
       }

@@ -1,0 +1,10 @@
+/* Fix minimal pour PrimeIcons */
+.pi {
+  font-family: 'primeicons' !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  
+  &::before {
+    font-family: 'primeicons' !important;
+  }
+}
