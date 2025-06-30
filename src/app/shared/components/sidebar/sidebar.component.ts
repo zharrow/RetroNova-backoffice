@@ -3,7 +3,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ArcadeMachinesService } from '../../../core/services/arcade-machines.service';
 
 interface MenuItem {
   label: string;
@@ -20,9 +19,9 @@ interface MenuItem {
     <div class="sidebar">
       <ul class="menu-list">
         @for (item of menuItems(); track item.routerLink) {
-          <li [routerLinkActive]="'active'">
+          <li [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: item.routerLink === '/'}">
             <a [routerLink]="item.routerLink">
-              <i class="menu-icon" [ngClass]="item.icon"></i>
+              <i [class]="item.icon" class="menu-icon"></i>
               <span class="menu-label">{{ item.label }}</span>
               @if (item.badge) {
                 <span class="menu-badge">{{ item.badge }}</span>
@@ -39,16 +38,7 @@ interface MenuItem {
       min-height: calc(100vh - 60px);
       background-color: var(--surface-section);
       padding: 1rem 0;
-      animation: slideIn 0.3s ease-out;
-    }
-    
-    @keyframes slideIn {
-      from {
-        transform: translateX(-100%);
-      }
-      to {
-        transform: translateX(0);
-      }
+      border-right: 1px solid var(--surface-border);
     }
     
     .menu-list {
@@ -67,24 +57,28 @@ interface MenuItem {
       padding: 0.75rem 1.25rem;
       text-decoration: none;
       color: var(--text-color);
-      transition: all 0.2s;
+      transition: background-color 0.2s, color 0.2s;
       position: relative;
     }
     
     .menu-list li a:hover {
       background-color: var(--surface-hover);
-      padding-left: 1.5rem;
     }
     
     .menu-list li a .menu-icon {
       margin-right: 0.75rem;
-      font-size: 1.2rem;
+      font-size: 1.125rem;
       width: 24px;
       text-align: center;
+      color: var(--text-color-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .menu-list li a .menu-label {
       flex: 1;
+      font-weight: 500;
     }
     
     .menu-list li a .menu-badge {
@@ -100,17 +94,21 @@ interface MenuItem {
       background-color: var(--primary-color);
       color: var(--primary-color-text);
       font-weight: 600;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background-color: white;
-        opacity: 0.5;
-      }
+    }
+    
+    .menu-list li.active a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: white;
+      opacity: 0.5;
+    }
+    
+    .menu-list li.active a .menu-icon {
+      color: white;
     }
     
     .menu-list li.active a .menu-badge {
@@ -121,11 +119,11 @@ interface MenuItem {
 })
 export class SidebarComponent {
   readonly menuItems = signal<MenuItem[]>([
-    { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
-    { label: 'Bornes d\'arcade', icon: 'pi pi-desktop', routerLink: '/arcade-machines' },
-    { label: 'Jeux', icon: 'pi pi-play', routerLink: '/games' },
-    { label: 'Utilisateurs', icon: 'pi pi-users', routerLink: '/users' },
-    { label: 'Parties', icon: 'pi pi-ticket', routerLink: '/parties' },
-    { label: 'Statistiques', icon: 'pi pi-chart-bar', routerLink: '/statistics' }
+    { label: 'Dashboard', icon: 'fas fa-home', routerLink: '/' },
+    { label: 'Bornes d\'arcade', icon: 'fas fa-desktop', routerLink: '/arcade-machines' },
+    { label: 'Jeux', icon: 'fas fa-gamepad', routerLink: '/games' },
+    { label: 'Utilisateurs', icon: 'fas fa-users', routerLink: '/users' },
+    { label: 'Parties', icon: 'fas fa-ticket', routerLink: '/parties' },
+    { label: 'Statistiques', icon: 'fas fa-chart-bar', routerLink: '/statistics' }
   ]);
 }

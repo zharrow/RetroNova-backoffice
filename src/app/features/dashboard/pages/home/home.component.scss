@@ -15,7 +15,7 @@
   
   .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
     gap: 1.5rem;
     animation: fadeIn 0.4s ease-out 0.1s both;
   }
@@ -24,6 +24,7 @@
 :host ::ng-deep {
   .dashboard-card {
     transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 36vh;
     
     &:hover {
       transform: translateY(-2px);
@@ -45,6 +46,8 @@
       padding: 1.5rem;
       color: white;
       background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
+      border-top-left-radius: var(--p-card-border-radius);
+      border-top-right-radius: var(--p-card-border-radius);
       
       i {
         font-size: 2rem;
@@ -73,13 +76,13 @@
       
       a {
         display: inline-block;
-        color: var(--primary-color);
+        color: var(--primary-color-dark);
         text-decoration: none;
         font-weight: 500;
         transition: color 0.2s;
         
         &:hover {
-          color: var(--primary-color);
+          color: var(--primary-color-light);
           text-decoration: underline;
         }
       }

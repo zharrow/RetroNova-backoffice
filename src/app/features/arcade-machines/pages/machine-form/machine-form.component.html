@@ -23,7 +23,7 @@
               <!-- Description -->
               <div class="form-group col-12">
                 <label for="description">Description</label>
-                <textarea id="description" pInputTextarea formControlName="description"
+                <textarea id="description" pTextarea formControlName="description"
                           rows="3" placeholder="Description de la borne (optionnel)">
                 </textarea>
               </div>
@@ -38,13 +38,13 @@
               <!-- Jeux -->
               <div class="form-group col-6">
                 <label for="game1_id" class="required">Jeu principal</label>
-                <p-dropdown id="game1_id" formControlName="game1_id"
+                <p-select id="game1_id" formControlName="game1_id"
                            [options]="gameOptions" placeholder="Sélectionner un jeu"
                            optionLabel="label" optionValue="value"
                            [filter]="true" filterBy="label"
                            [showClear]="true"
                            [class.ng-invalid]="isFieldInvalid('game1_id')">
-                </p-dropdown>
+                </p-select>
                 <small class="p-error" *ngIf="isFieldInvalid('game1_id')">
                   Le jeu principal est requis
                 </small>
@@ -52,13 +52,13 @@
               
               <div class="form-group col-6">
                 <label for="game2_id">Jeu secondaire (optionnel)</label>
-                <p-dropdown id="game2_id" formControlName="game2_id"
+                <p-select id="game2_id" formControlName="game2_id"
                            [options]="filteredGame2Options" placeholder="Sélectionner un jeu"
                            optionLabel="label" optionValue="value"
                            [filter]="true" filterBy="label"
                            [showClear]="true"
                            [disabled]="!machineForm.get('game1_id')?.value">
-                </p-dropdown>
+                </p-select>
                 <small class="text-muted" *ngIf="!machineForm.get('game1_id')?.value">
                   Sélectionnez d'abord le jeu principal
                 </small>
@@ -75,10 +75,10 @@
             
             <!-- Actions -->
             <div class="form-actions">
-              <button pButtonIcon pRipple type="button" label="Annuler" 
+              <button pButton pRipple type="button" label="Annuler" 
                       class="p-button-text" routerLink="/arcade-machines"></button>
-              <button pButtonIcon pRipple type="submit" label="Enregistrer"
-                      loading="submitting" [disabled]="machineForm.invalid">
+              <button pButton pRipple type="submit" label="Enregistrer"
+                      [loading]="submitting" [disabled]="machineForm.invalid">
               </button>
             </div>
           </form>

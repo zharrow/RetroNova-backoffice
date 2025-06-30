@@ -2,22 +2,19 @@
 
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-loader',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule],
+  imports: [CommonModule],
   template: `
     <div class="loader-container" [class.fullscreen]="fullScreen()">
-      <p-progressSpinner 
-        [style]="{width: spinnerSize(), height: spinnerSize()}"
-        strokeWidth="4"
-        animationDuration=".8s">
-      </p-progressSpinner>
-      @if (message()) {
-        <p class="loader-message">{{ message() }}</p>
-      }
+      <div class="loader-content">
+        <i class="fas fa-spinner fa-spin loader-icon" [style.font-size]="spinnerSize()"></i>
+        @if (message()) {
+          <p class="loader-message">{{ message() }}</p>
+        }
+      </div>
     </div>
   `,
   styles: [`
@@ -27,7 +24,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
       justify-content: center;
       align-items: center;
       padding: 2rem;
-      gap: 1rem;
     }
     
     .loader-container.fullscreen {
@@ -39,7 +35,21 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
       background-color: rgba(0, 0, 0, 0.4);
       z-index: 9999;
       backdrop-filter: blur(2px);
-      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .loader-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .loader-icon {
+      color: var(--primary-color);
+    }
+    
+    .fullscreen .loader-icon {
+      color: white;
     }
     
     .loader-message {
@@ -47,30 +57,11 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
       color: var(--text-color-secondary);
       font-size: 0.875rem;
       text-align: center;
-      animation: pulse 2s infinite;
     }
     
     .fullscreen .loader-message {
       color: white;
       font-size: 1rem;
-    }
-    
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-    
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
     }
   `]
 })
@@ -81,9 +72,9 @@ export class LoaderComponent {
   
   spinnerSize(): string {
     const sizes = {
-      small: '2rem',
-      medium: '3rem',
-      large: '4rem'
+      small: '1.5rem',
+      medium: '2.5rem',
+      large: '3.5rem'
     };
     return sizes[this.size()];
   }

@@ -4,8 +4,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextarea } from 'primeng/inputtextarea';
-import { DropdownModule } from 'primeng/dropdown';
+// import { InputTextarea } from 'primeng/inputtextarea';
+// import { DropdownModule } from 'primeng/dropdown';
+import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
@@ -30,8 +32,8 @@ interface GameOption {
     RouterModule,
     ButtonModule,
     InputTextModule,
-    InputTextarea,
-    DropdownModule,
+    TextareaModule,
+    SelectModule,
     CardModule,
     RippleModule,
     LoaderComponent
@@ -107,6 +109,9 @@ export class MachineFormComponent implements OnInit {
     this.loading = true;
     
     if (this.isEditMode && this.machineId) {
+      this.gamesService.getAllGames().subscribe(games => {
+          console.log('Jeux récupérés :', games);
+        });
       // Charger les jeux et la machine en parallèle
       forkJoin({
         games: this.gamesService.getAllGames(),
@@ -117,6 +122,9 @@ export class MachineFormComponent implements OnInit {
           this.setupGameOptions();
           this.patchFormWithMachine(machine);
           this.loading = false;
+          this.gamesService.getAllGames().subscribe(games => {
+            console.log('Jeux récupérés :', games);
+          })
         },
         error: (error) => {
           console.error('Erreur lors du chargement des données:', error);
@@ -135,6 +143,7 @@ export class MachineFormComponent implements OnInit {
           this.games = games;
           this.setupGameOptions();
           this.loading = false;
+          console.log("premier log:" + this.gamesService.getAllGames());
         },
         error: (error) => {
           console.error('Erreur lors du chargement des jeux:', error);
