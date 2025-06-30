@@ -2,6 +2,9 @@
       <div class="page-header">
         <h1>{{ isEditMode ? 'Modifier la borne' : 'Nouvelle borne d\'arcade' }}</h1>
       </div>
+
+      <!-- Affichage de test pour voir les jeux -->
+      <!-- <pre>{{ gameOptions | json }}</pre> -->
       
       <div class="form-container">
         <p-card>
@@ -39,11 +42,11 @@
               <div class="form-group col-6">
                 <label for="game1_id" class="required">Jeu principal</label>
                 <p-select id="game1_id" formControlName="game1_id"
-                           [options]="gameOptions" placeholder="Sélectionner un jeu"
-                           optionLabel="label" optionValue="value"
-                           [filter]="true" filterBy="label"
-                           [showClear]="true"
-                           [class.ng-invalid]="isFieldInvalid('game1_id')">
+                          [options]="gameOptions" placeholder="Sélectionner un jeu"
+                          optionLabel="label" optionValue="value"
+                          [filter]="true" filterBy="label"
+                          [showClear]="true"
+                          [class.ng-invalid]="isFieldInvalid('game1_id')">
                 </p-select>
                 <small class="p-error" *ngIf="isFieldInvalid('game1_id')">
                   Le jeu principal est requis
@@ -57,6 +60,7 @@
                            optionLabel="label" optionValue="value"
                            [filter]="true" filterBy="label"
                            [showClear]="true"
+                           variant="outlined"
                            [disabled]="!machineForm.get('game1_id')?.value">
                 </p-select>
                 <small class="text-muted" *ngIf="!machineForm.get('game1_id')?.value">

@@ -42,6 +42,7 @@ import { ArcadeMachine } from '../../../../core/models/arcade-machine.model';
         </div>
       </div>
       
+      
       <div class="page-content">
         <div class="search-container">
           <span class="p-input-icon-left">
