@@ -10,30 +10,30 @@ export class ArcadeMachinesService {
   constructor(private apiService: ApiService) {}
   
   getAllMachines(includeDeleted: boolean = false): Observable<ArcadeMachine[]> {
-    return this.apiService.get<ArcadeMachine[]>('/arcade_machines', { include_deleted: includeDeleted });
+    return this.apiService.get<ArcadeMachine[]>('/arcades', { include_deleted: includeDeleted });
   }
   
   getMachineById(id: string, includeDeleted: boolean = false): Observable<ArcadeMachine> {
-    return this.apiService.get<ArcadeMachine>(`/arcade_machines/${id}`, { include_deleted: includeDeleted });
+    return this.apiService.get<ArcadeMachine>(`/arcades/${id}`, { include_deleted: includeDeleted });
   }
   
   createMachine(machine: ArcadeMachineCreate): Observable<ArcadeMachine> {
-    return this.apiService.post<ArcadeMachine>('/arcade_machines', machine);
+    return this.apiService.post<ArcadeMachine>('/arcades', machine);
   }
   
   updateMachine(id: string, machine: ArcadeMachineUpdate): Observable<ArcadeMachine> {
-    return this.apiService.put<ArcadeMachine>(`/arcade_machines/${id}`, machine);
+    return this.apiService.put<ArcadeMachine>(`/arcades/${id}`, machine);
   }
   
   deleteMachine(id: string, hardDelete: boolean = false): Observable<any> {
-    return this.apiService.delete(`/arcade_machines/${id}`, { hard_delete: hardDelete });
+    return this.apiService.delete(`/arcades/${id}`, { hard_delete: hardDelete });
   }
   
   restoreMachine(id: string): Observable<ArcadeMachine> {
-    return this.apiService.post<ArcadeMachine>(`/arcade_machines/${id}/restore`, {});
+    return this.apiService.post<ArcadeMachine>(`/arcades/${id}/restore`, {});
   }
   
   getGamesForMachine(id: string): Observable<any> {
-    return this.apiService.get<any>(`/arcade_machines/${id}/games`);
+    return this.apiService.get<any>(`/arcades/${id}/games`);
   }
 }

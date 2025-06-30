@@ -18,7 +18,7 @@ export class GamesService {
   }
   
   createGame(game: GameCreate): Observable<Game> {
-    return this.apiService.post<Game>('/games', game);
+    return this.apiService.post<Game>('/admin/games/', game);
   }
   
   updateGame(id: string, game: GameUpdate): Observable<Game> {

@@ -169,10 +169,10 @@ export class UsersListComponent implements OnInit {
    */
   confirmDelete(user: User): void {
     this.confirmationService.confirm({
-      message: `Êtes-vous sûr de vouloir supprimer l'utilisateur "${user.first_name || ''} ${user.last_name || ''}" (ID: ${user.publique_id}) ?`,
+      message: `Êtes-vous sûr de vouloir supprimer l'utilisateur "${user.nom || ''} ${user.prenom || ''}" (ID: ${user.firebase_uid}) ?`,
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => this.deleteUser(user.firebase_id)
+      accept: () => this.deleteUser(user.firebase_uid)
     });
   }
   

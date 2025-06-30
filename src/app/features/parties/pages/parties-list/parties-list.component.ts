@@ -286,8 +286,8 @@ export class PartiesListComponent implements OnInit {
       
       const getPlayerName = (player: User | undefined): string | undefined => {
         if (!player) return undefined;
-        const fullName = `${player.first_name || ''} ${player.last_name || ''}`.trim();
-        return fullName || player.publique_id;
+        const fullName = `${player.nom || ''} ${player.prenom || ''}`.trim();
+        return fullName || player.firebase_uid;
       };
       
       return {

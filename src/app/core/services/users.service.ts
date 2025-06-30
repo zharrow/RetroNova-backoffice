@@ -9,8 +9,9 @@ import { User, UserCreate, UserUpdate } from '../models/user.model';
 export class UsersService {
   constructor(private apiService: ApiService) {}
   
+  // Affiche tous les utilisateurs supprimés si includeDeleted est vrai pour les restaurés
   getAllUsers(includeDeleted: boolean = false): Observable<User[]> {
-    return this.apiService.get<User[]>('/users', { include_deleted: includeDeleted });
+    return this.apiService.get<User[]>('/admin/users/deleted', { include_deleted: includeDeleted });
   }
   
   getUserById(id: string, includeDeleted: boolean = false): Observable<User> {

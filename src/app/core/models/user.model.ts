@@ -1,31 +1,39 @@
-import { UUID } from 'angular2-uuid';
-
 export interface User {
-  id: UUID;
-  publique_id: string;
-  firebase_id: string;
-  first_name: string | null;
-  last_name: string | null;
-  nb_ticket: number;
-  bar: boolean;
+  id: number;
+  firebase_uid: string;
+  email: string;
+  nom: string;
+  prenom: string;
+  pseudo: string;
+  date_naissance: Date;
+  numero_telephone: string;
+  tickets_balance: number;
   created_at: Date;
   updated_at: Date;
-  deleted_at: Date | null;
-  is_deleted: boolean;
 }
 
 export interface UserCreate {
-  first_name?: string;
-  last_name?: string;
-  nb_ticket?: number;
-  bar?: boolean;
-  firebase_id: string;
+  firebase_uid: string;
+  email: string;
+  nom: string;
+  prenom: string;
+  pseudo: string;
+  date_naissance: Date;
+  numero_telephone: string;
 }
 
 export interface UserUpdate {
-  first_name?: string;
-  last_name?: string;
-  nb_ticket?: number;
-  bar?: boolean;
-  firebase_id?: string;
+  email?: string;
+  nom?: string;
+  prenom?: string;
+  pseudo?: string;
+  date_naissance?: Date;
+  numero_telephone?: string;
+}
+
+export interface UserSearchResponse {
+  id: number;
+  pseudo: string;
+  nom: string;
+  prenom: string;
 }

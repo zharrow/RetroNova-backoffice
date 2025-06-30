@@ -64,8 +64,8 @@ interface UserStats {
               <i class="pi pi-user"></i>
             </div>
             <div class="user-identity">
-              <h2>{{ user.first_name || 'Prénom non défini' }} {{ user.last_name || 'Nom non défini' }}</h2>
-              <p class="user-id">ID Public: <strong>{{ user.publique_id }}</strong></p>
+              <h2>{{ user.nom || 'Prénom non défini' }} {{ user.prenom || 'Nom non défini' }}</h2>
+              <p class="user-id">ID Public: <strong>{{ user.firebase_uid }}</strong></p>
             </div>
             <div class="user-actions">
               <button pButton pRipple type="button" icon="pi pi-pencil" 
@@ -82,17 +82,17 @@ interface UserStats {
           <div class="user-details-grid">
             <div class="detail-item">
               <label>Firebase ID</label>
-              <p>{{ user.firebase_id }}</p>
+              <p>{{ user.firebase_uid }}</p>
             </div>
             <div class="detail-item">
               <label>Tickets disponibles</label>
-              <p-chip [label]="user.nb_ticket.toString()" styleClass="custom-chip-primary"></p-chip>
+              <p-chip [label]="user.tickets_balance.toString()" styleClass="custom-chip-primary"></p-chip>
             </div>
-            <div class="detail-item">
+            <!-- <div class="detail-item">
               <label>Accès bar</label>
               <p-tag [severity]="user.bar ? 'success' : 'danger'" 
                      [value]="user.bar ? 'Autorisé' : 'Non autorisé'"></p-tag>
-            </div>
+            </div> -->
             <div class="detail-item">
               <label>Date de création</label>
               <p>{{ formatDate(user.created_at) }}</p>
@@ -450,7 +450,7 @@ export class UserDetailComponent implements OnInit {
     if (!this.user) return;
     
     this.confirmationService.confirm({
-      message: `Êtes-vous sûr de vouloir supprimer l'utilisateur "${this.user.first_name || ''} ${this.user.last_name || ''}" ?`,
+      message: `Êtes-vous sûr de vouloir supprimer l'utilisateur "${this.user.nom || ''} ${this.user.prenom || ''}" ?`,
       header: 'Confirmation de suppression',
       icon: 'pi pi-exclamation-triangle',
       accept: () => this.deleteUser()
@@ -463,7 +463,7 @@ export class UserDetailComponent implements OnInit {
   private deleteUser(): void {
     if (!this.user) return;
     
-    this.usersService.deleteUser(this.user.firebase_id).subscribe({
+    this.usersService.deleteUser(this.user.firebase_uid).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',

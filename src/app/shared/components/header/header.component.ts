@@ -73,7 +73,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     if (user) {
-      this.userName.set(user.first_name || user.firebase_id);
+      this.userName.set(user.nom || user.prenom);
     }
   }
 
