@@ -68,9 +68,10 @@ export class MachineFormComponent implements OnInit {
     this.machineId = this.route.snapshot.params['id'];
     this.isEditMode = !!this.machineId;
     
-    if (this.isEditMode && this.machineId) {
-      this.loadInitialData();
-    }
+    this.loadInitialData();
+    // if (this.isEditMode && this.machineId) {
+    //   this.loadInitialData();
+    // }
   }
   
   /**
@@ -120,6 +121,8 @@ export class MachineFormComponent implements OnInit {
         next: ({ games, machine }) => {
           this.games = games;
           this.setupGameOptions();
+          console.log('Jeux récupérés:', this.games);
+          console.log('Options générées:', this.gameOptions);
           this.patchFormWithMachine(machine);
           this.loading = false;
           this.gamesService.getAllGames().subscribe(games => {
