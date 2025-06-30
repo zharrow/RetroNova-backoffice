@@ -1,59 +1,54 @@
-// src/app/core/services/storage.service.ts
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { ApiService } from './api.service';
+import { 
+  Score,
+  CreateScoreRequest,
+  PlayerStats
+} from '../models/score.model';
 
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-
-/**
- * Service abstrait pour le stockage
- * Gère automatiquement les différences entre client et serveur
- */
 @Injectable({
   providedIn: 'root'
 })
-export class StorageService {
-  private readonly platformId = inject(PLATFORM_ID);
-  private inMemoryStorage = new Map<string, string>();
+export class ScoresService {
+  private readonly apiService = inject(ApiService);
   
+  // Signal pour les scores en cache
+  private readonly scoresSignal = signal<Score[]>([]);
+  readonly scores = this.scoresSignal.asReadonly();
+
   /**
-   * Obtient une valeur du stockage
+   * Crée un nouveau score (pour les bornes avec clé API)
    */
-  getItem(key: string): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(key);
-    }
-    return this.inMemoryStorage.get(key) || null;
+  createScore(scoreData: CreateScoreRequest): Observable<Score> {
+    return this.apiService.post<Score>('/scores', scoreData);
   }
-  
+
   /**
-   * Définit une valeur dans le stockage
+   * Récupère les scores avec filtres optionnels
    */
-  setItem(key: string, value: string): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(key, value);
-    } else {
-      this.inMemoryStorage.set(key, value);
-    }
+  getScores(params?: {
+    game_id?: number;
+    arcade_id?: number;
+    friends_only?: boolean;
+    limit?: number;
+  }): Observable<Score[]> {
+    return this.apiService.get<Score[]>('/scores', params).pipe(
+      tap(scores => this.scoresSignal.set(scores))
+    );
   }
-  
+
   /**
-   * Supprime une valeur du stockage
+   * Récupère les statistiques personnelles de l'utilisateur
    */
-  removeItem(key: string): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(key);
-    } else {
-      this.inMemoryStorage.delete(key);
-    }
+  getMyStats(): Observable<PlayerStats> {
+    return this.apiService.get<PlayerStats>('/scores/my-stats');
   }
-  
+
   /**
-   * Efface tout le stockage
+   * Efface le cache des scores
    */
-  clear(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.clear();
-    } else {
-      this.inMemoryStorage.clear();
-    }
+  clearCache(): void {
+    this.scoresSignal.set([]);
   }
 }

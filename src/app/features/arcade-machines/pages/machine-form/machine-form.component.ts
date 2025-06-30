@@ -10,9 +10,9 @@ import { CardModule } from 'primeng/card';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { forkJoin } from 'rxjs';
-import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
+import { ArcadesService } from '../../../../core/services/arcades.service';
 import { GamesService } from '../../../../core/services/games.service';
-import { ArcadeMachine } from '../../../../core/models/arcade-machine.model';
+import { Arcade } from '../../../../core/models/arcade.model';
 import { Game } from '../../../../core/models/game.model';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 
@@ -44,7 +44,7 @@ export class MachineFormComponent implements OnInit {
   isEditMode = false;
   loading = false;
   submitting = false;
-  machineId?: string;
+  machineId?: number;
   
   games: Game[] = [];
   gameOptions: GameOption[] = [];
@@ -52,7 +52,7 @@ export class MachineFormComponent implements OnInit {
   
   constructor(
     private fb: FormBuilder,
-    private arcadeMachinesService: ArcadeMachinesService,
+    private arcadesService: ArcadesService,
     private gamesService: GamesService,
     private route: ActivatedRoute,
     private router: Router,
@@ -110,7 +110,7 @@ export class MachineFormComponent implements OnInit {
       // Charger les jeux et la machine en parallèle
       forkJoin({
         games: this.gamesService.getAllGames(),
-        machine: this.arcadeMachinesService.getMachineById(this.machineId)
+        machine: this.arcadesService.getArcadeById(this.machineId)
       }).subscribe({
         next: ({ games, machine }) => {
           this.games = games;

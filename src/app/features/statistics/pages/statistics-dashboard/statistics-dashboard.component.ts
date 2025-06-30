@@ -12,7 +12,7 @@ import { MessageService } from 'primeng/api';
 import { UsersService } from '../../../../core/services/users.service';
 import { PartiesService } from '../../../../core/services/parties.service';
 import { GamesService } from '../../../../core/services/games.service';
-import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
+import { ArcadeMachinesService } from '../../../../core/services/arcades.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { FormsModule } from '@angular/forms';
 

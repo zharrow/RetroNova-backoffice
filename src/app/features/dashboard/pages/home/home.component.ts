@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { forkJoin } from 'rxjs';
-import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
+import { ArcadeMachinesService } from '../../../../core/services/arcades.service';
 import { GamesService } from '../../../../core/services/games.service';
 import { UsersService } from '../../../../core/services/users.service';
 import { PartiesService } from '../../../../core/services/parties.service';

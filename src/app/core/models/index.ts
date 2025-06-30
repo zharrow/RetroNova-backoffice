@@ -1,4 +1,23 @@
+// User models
 export * from './user.model';
-export * from './arcade-machine.model';
+
+// Game models
 export * from './game.model';
-export * from './party.model';
+
+// Arcade models
+export * from './arcade.model';
+
+// Reservation models
+export * from './reservation.model';
+
+// Score models
+export * from './score.model';
+
+// Friend models
+export * from './friend.model';
+
+// Promo models
+export * from './promo.model';
+
+// Ticket models
+export * from './ticket.model';

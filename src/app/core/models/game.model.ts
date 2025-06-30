@@ -1,27 +1,28 @@
-import { UUID } from 'angular2-uuid';
-
 export interface Game {
-  id: UUID;
-  name: string;
-  description: string | null;
-  nb_max_player: number;
-  nb_min_player: number;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date | null;
+  id: number;
+  nom: string;
+  description?: string;
+  min_players: number;
+  max_players: number;
+  ticket_cost: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
   is_deleted: boolean;
 }
 
 export interface GameCreate {
-  name: string;
+  nom: string;
   description?: string;
-  nb_max_player: number;
-  nb_min_player: number;
+  min_players: number;
+  max_players: number;
+  ticket_cost: number;
 }
 
 export interface GameUpdate {
-  name?: string;
+  nom?: string;
   description?: string;
-  nb_max_player?: number;
-  nb_min_player?: number;
+  min_players?: number;
+  max_players?: number;
+  ticket_cost?: number;
 }

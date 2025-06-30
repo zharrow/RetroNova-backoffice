@@ -3,7 +3,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ArcadeMachinesService } from '../../../core/services/arcade-machines.service';
+import { ArcadeMachinesService } from '../../../core/services/arcades.service';
 
 interface MenuItem {
   label: string;

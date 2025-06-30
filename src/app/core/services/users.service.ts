@@ -1,36 +1,88 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+// src/app/core/services/users.service.ts
+
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
-import { User, UserCreate, UserUpdate } from '../models/user.model';
+import { User, UserCreate, UserUpdate, UserSearchResponse } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private apiService: ApiService) {}
+  private readonly apiService = inject(ApiService);
   
-  // Affiche tous les utilisateurs supprimés si includeDeleted est vrai pour les restaurés
-  getAllUsers(includeDeleted: boolean = false): Observable<User[]> {
-    return this.apiService.get<User[]>('/admin/users/deleted', { include_deleted: includeDeleted });
+  // Signal pour la liste des utilisateurs en cache
+  private readonly usersSignal = signal<User[]>([]);
+  readonly users = this.usersSignal.asReadonly();
+  
+  /**
+   * Récupère tous les utilisateurs (actifs)
+   */
+  getAllUsers(): Observable<User[]> {
+    return this.apiService.get<User[]>('/users/me').pipe(
+      tap(users => this.usersSignal.set(users))
+    );
   }
   
-  getUserById(id: string, includeDeleted: boolean = false): Observable<User> {
-    return this.apiService.get<User>(`/users/${id}`, { include_deleted: includeDeleted });
+  /**
+   * Récupère les utilisateurs supprimés (admin uniquement)
+   */
+  getDeletedUsers(): Observable<User[]> {
+    return this.apiService.get<User[]>('/admin/users/deleted');
   }
   
-  createUser(user: UserCreate): Observable<User> {
-    return this.apiService.post<User>('/users', user);
+  /**
+   * Récupère un utilisateur par son ID
+   */
+  getUserById(id: number): Observable<User> {
+    return this.apiService.get<User>(`/users/${id}`);
   }
   
-  updateUser(id: string, user: UserUpdate): Observable<User> {
-    return this.apiService.put<User>(`/users/${id}`, user);
+  /**
+   * Recherche des utilisateurs
+   */
+  searchUsers(query: string, limit: number = 10): Observable<UserSearchResponse[]> {
+    return this.apiService.get<UserSearchResponse[]>('/users/search', {
+      q: query,
+      limit
+    });
   }
   
-  deleteUser(id: string, hardDelete: boolean = false): Observable<User> {
-    return this.apiService.delete<User>(`/users/${id}`, { hard_delete: hardDelete });
+  /**
+   * Met à jour le profil de l'utilisateur connecté
+   */
+  updateMyProfile(userData: UserUpdate): Observable<User> {
+    return this.apiService.put<User>('/users/me', userData);
   }
   
-  restoreUser(id: string): Observable<User> {
-    return this.apiService.post<User>(`/users/${id}/restore`, {});
+  /**
+   * Met à jour les tickets d'un utilisateur (admin)
+   */
+  updateUserTickets(userId: number, ticketsToAdd: number): Observable<any> {
+    return this.apiService.put(`/admin/users/tickets`, {
+      user_id: userId,
+      tickets_to_add: ticketsToAdd
+    });
+  }
+  
+  /**
+   * Supprime (soft delete) un utilisateur
+   */
+  deleteUser(userId: number): Observable<any> {
+    return this.apiService.delete(`/users/${userId}`);
+  }
+  
+  /**
+   * Restaure un utilisateur supprimé (admin)
+   */
+  restoreUser(userId: number): Observable<any> {
+    return this.apiService.put(`/admin/users/${userId}/restore`, {});
+  }
+  
+  /**
+   * Efface le cache des utilisateurs
+   */
+  clearCache(): void {
+    this.usersSignal.set([]);
   }
 }
