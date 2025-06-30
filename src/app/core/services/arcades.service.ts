@@ -64,6 +64,21 @@ export class ArcadesService {
   }
 
   /**
+   * Met à jour une borne (admin)
+   */
+  updateArcade(id: number, arcadeData: ArcadeUpdate): Observable<Arcade> {
+    return this.apiService.put<Arcade>(`/admin/arcades/${id}`,
+      arcadeData
+    ).pipe(
+      tap(updatedArcade => {
+        this.arcadesSignal.update(arcades => 
+          arcades.map(arcade => arcade.id === id ? updatedArcade : arcade)
+        );
+      })
+    );
+  }
+
+  /**
    * Efface le cache des bornes
    */
   clearCache(): void {
