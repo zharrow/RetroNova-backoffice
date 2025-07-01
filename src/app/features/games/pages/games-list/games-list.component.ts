@@ -665,14 +665,14 @@ export class GamesListComponent implements OnInit {
       rejectButtonStyleClass: 'p-button-text',
       acceptLabel: 'Supprimer',
       rejectLabel: 'Annuler',
-      accept: () => this.deleteGame(game.id)
+      accept: () => this.deleteGame(game.id.toString())
     });
   }
 
   /**
    * Supprime un jeu après confirmation
    */
-  private deleteGame(id: number): void {
+  private deleteGame(id: string): void {
     this.gamesService.deleteGame(id).subscribe({
       next: () => {
         this.messageService.add({

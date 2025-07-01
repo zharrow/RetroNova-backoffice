@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { forkJoin } from 'rxjs';
-import { ArcadeMachinesService } from '../../../../core/services/arcades.service';
+import { ArcadesService } from '../../../../core/services/arcades.service';
 import { GamesService } from '../../../../core/services/games.service';
 import { UsersService } from '../../../../core/services/users.service';
 import { PartiesService } from '../../../../core/services/parties.service';
@@ -57,7 +57,7 @@ interface DashboardCard {
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  private readonly arcadeMachinesService = inject(ArcadeMachinesService);
+  private readonly arcadesService = inject(ArcadesService);
   private readonly gamesService = inject(GamesService);
   private readonly usersService = inject(UsersService);
   private readonly partiesService = inject(PartiesService);
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
     
     forkJoin({
       users: this.usersService.getAllUsers(),
-      machines: this.arcadeMachinesService.getAllMachines(),
+      machines: this.arcadesService.getAllArcades(),
       games: this.gamesService.getAllGames(),
       activeParties: this.partiesService.getActiveParties()
     }).subscribe({

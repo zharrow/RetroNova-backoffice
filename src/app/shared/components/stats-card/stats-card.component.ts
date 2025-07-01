@@ -79,14 +79,14 @@ export interface StatsData {
             </div>
 
             <!-- Tendance -->
-            @if (data().trend) {
+            @if (data().trend; as trend) {
               <div [class]="trendClasses()">
                 <i [class]="trendIconClasses()"></i>
                 <span class="trend-value">
                   {{ Math.abs(data().trend!.value) }}%
                 </span>
-                @if (data().trend?.period) {
-                  <span class="trend-period">{{ data().trend.period }}</span>
+                @if (trend.period) {
+                  <span class="trend-period">{{ trend.period }}</span>
                 }
               </div>
             }

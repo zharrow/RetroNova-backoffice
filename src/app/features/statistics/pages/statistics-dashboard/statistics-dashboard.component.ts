@@ -12,7 +12,7 @@ import { MessageService } from 'primeng/api';
 import { UsersService } from '../../../../core/services/users.service';
 import { PartiesService } from '../../../../core/services/parties.service';
 import { GamesService } from '../../../../core/services/games.service';
-import { ArcadeMachinesService } from '../../../../core/services/arcades.service';
+import { ArcadesService } from '../../../../core/services/arcades.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { FormsModule } from '@angular/forms';
 
@@ -383,7 +383,7 @@ export class StatisticsDashboardComponent implements OnInit {
     private usersService: UsersService,
     private partiesService: PartiesService,
     private gamesService: GamesService,
-    private arcadeMachinesService: ArcadeMachinesService,
+    private arcadesService: ArcadesService,
     private messageService: MessageService
   ) {
     this.initializeChartOptions();
@@ -455,7 +455,7 @@ export class StatisticsDashboardComponent implements OnInit {
       users: this.usersService.getAllUsers(),
       parties: this.partiesService.getAllParties(),
       games: this.gamesService.getAllGames(),
-      machines: this.arcadeMachinesService.getAllMachines()
+      machines: this.arcadesService.getAllArcades()
     }).subscribe({
       next: (data) => {
         this.processStatistics(data);

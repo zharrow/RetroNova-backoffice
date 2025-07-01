@@ -34,7 +34,7 @@ export class UsersService {
   /**
    * Récupère un utilisateur par son ID
    */
-  getUserById(id: number): Observable<User> {
+  getUserById(id: string): Observable<User> {
     return this.apiService.get<User>(`/users/${id}`);
   }
   
@@ -58,7 +58,7 @@ export class UsersService {
   /**
    * Met à jour les tickets d'un utilisateur (admin)
    */
-  updateUserTickets(userId: number, ticketsToAdd: number): Observable<any> {
+  updateUserTickets(userId: string, ticketsToAdd: number): Observable<any> {
     return this.apiService.put(`/admin/users/tickets`, {
       user_id: userId,
       tickets_to_add: ticketsToAdd
@@ -68,14 +68,14 @@ export class UsersService {
   /**
    * Supprime (soft delete) un utilisateur
    */
-  deleteUser(userId: number): Observable<any> {
+  deleteUser(userId: string | undefined): Observable<any> {
     return this.apiService.delete(`/users/${userId}`);
   }
   
   /**
    * Restaure un utilisateur supprimé (admin)
    */
-  restoreUser(userId: number): Observable<any> {
+  restoreUser(userId: string): Observable<any> {
     return this.apiService.put(`/admin/users/${userId}/restore`, {});
   }
   

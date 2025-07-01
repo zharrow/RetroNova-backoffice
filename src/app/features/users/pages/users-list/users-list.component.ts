@@ -437,14 +437,14 @@ export class UsersListComponent implements OnInit {
       rejectButtonStyleClass: 'p-button-text',
       acceptLabel: 'Supprimer',
       rejectLabel: 'Annuler',
-      accept: () => this.deleteUser(user.id)
+      accept: () => this.deleteUser(user.firebase_uid)
     });
   }
 
   /**
    * Supprime un utilisateur
    */
-  private deleteUser(userId: number): void {
+  private deleteUser(userId: string): void {
     this.usersService.deleteUser(userId).subscribe({
       next: () => {
         this.messageService.add({

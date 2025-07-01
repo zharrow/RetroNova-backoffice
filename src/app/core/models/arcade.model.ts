@@ -26,9 +26,9 @@ export interface GameOnArcade {
 export interface ArcadeCreate {
   nom: string;
   description?: string;
-  localisation: string;
-  latitude: number;
-  longitude: number;
+  localisation?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface ArcadeUpdate {

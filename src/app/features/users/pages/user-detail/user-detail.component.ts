@@ -463,7 +463,7 @@ export class UserDetailComponent implements OnInit {
   private deleteUser(): void {
     if (!this.user) return;
     
-    this.usersService.deleteUser(this.user.firebase_uid).subscribe({
+    this.usersService.deleteUser(this.userId).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',

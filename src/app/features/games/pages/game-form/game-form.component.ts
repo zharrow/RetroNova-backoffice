@@ -230,10 +230,10 @@ export class GameFormComponent implements OnInit {
     this.gamesService.getGameById(id).subscribe({
       next: (game) => {
         this.gameForm.patchValue({
-          name: game.name,
+          name: game.nom,
           description: game.description,
-          nb_min_player: game.nb_min_player,
-          nb_max_player: game.nb_max_player
+          nb_min_player: game.min_players,
+          nb_max_player: game.max_players
         });
         this.loading = false;
       },

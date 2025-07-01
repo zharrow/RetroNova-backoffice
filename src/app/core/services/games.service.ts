@@ -25,7 +25,7 @@ export class GamesService {
   /**
    * Récupère un jeu par son ID
    */
-  getGameById(id: number): Observable<Game> {
+  getGameById(id: string): Observable<Game> {
     return this.apiService.get<Game>(`/games/${id}`);
   }
 
@@ -43,11 +43,11 @@ export class GamesService {
   /**
    * Met à jour un jeu (admin)
    */
-  updateGame(id: number, gameData: GameUpdate): Observable<Game> {
+  updateGame(id: string, gameData: GameUpdate): Observable<Game> {
     return this.apiService.put<Game>(`/admin/games/${id}`, gameData).pipe(
       tap(updatedGame => {
         this.gamesSignal.update(games => 
-          games.map(game => game.id === id ? updatedGame : game)
+          games.map(game => game.id.toString() === id ? updatedGame : game)
         );
       })
     );
@@ -56,11 +56,11 @@ export class GamesService {
   /**
    * Supprime un jeu (admin)
    */
-  deleteGame(id: number): Observable<any> {
+  deleteGame(id: string): Observable<any> {
     return this.apiService.delete(`/admin/games/${id}`).pipe(
       tap(() => {
         this.gamesSignal.update(games => 
-          games.filter(game => game.id !== id)
+          games.filter(game => game.id.toString() !== id)
         );
       })
     );

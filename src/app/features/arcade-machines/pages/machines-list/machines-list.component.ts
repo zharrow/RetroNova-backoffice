@@ -323,7 +323,6 @@ class MachineStatsCalculator {
                           icon="pi pi-cog" 
                           [rounded]="true"
                           text
-                          severity="warning"
                           size="small"
                           pTooltip="Configurer les jeux" 
                           tooltipPosition="top"
@@ -458,7 +457,6 @@ class MachineStatsCalculator {
                           pRipple 
                           label="Config" 
                           icon="pi pi-cog"
-                          severity="warning"
                           outlined
                           size="small"
                           class="card-action-btn"
