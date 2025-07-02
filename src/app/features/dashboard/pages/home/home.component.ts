@@ -10,6 +10,7 @@ import { GamesService } from '../../../../core/services/games.service';
 import { UsersService } from '../../../../core/services/users.service';
 import { PartiesService } from '../../../../core/services/parties.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { MachinesListComponent } from "../../../arcade-machines/pages/machines-list/machines-list.component";
 
 interface DashboardCard {
   title: string;
@@ -23,10 +24,11 @@ interface DashboardCard {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardModule],
+  imports: [CommonModule, RouterModule, CardModule, MachinesListComponent],
   template: `
     <div class="dashboard-container">
       <h1>Tableau de bord</h1>
+      <app-machines-list></app-machines-list>
       
       @if (isLoading()) {
         <div class="loading-container">

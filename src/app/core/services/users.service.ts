@@ -19,7 +19,7 @@ export class UsersService {
    * Récupère tous les utilisateurs (actifs)
    */
   getAllUsers(): Observable<User[]> {
-    return this.apiService.get<User[]>('/users/me').pipe(
+    return this.apiService.get<User[]>('/admin/users/deleted').pipe(
       tap(users => this.usersSignal.set(users))
     );
   }

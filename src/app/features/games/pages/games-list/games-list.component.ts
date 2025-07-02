@@ -156,7 +156,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                   <th pSortableColumn="max_players" style="width: 12%">
                     Max <p-sortIcon field="max_players"></p-sortIcon>
                   </th>
-                  <th style="width: 11%">Actions</th>
+                  <!-- <th style="width: 11%">Actions</th> -->
                 </tr>
               </ng-template>
               
@@ -189,7 +189,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                       icon="pi pi-users">
                     </p-tag>
                   </td>
-                  <td>
+                  <!-- <td>
                     <div class="action-buttons">
                       <p-button 
                         icon="pi pi-pencil" 
@@ -213,7 +213,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                         (click)="confirmDelete(game)">
                       </p-button>
                     </div>
-                  </td>
+                  </td> -->
                 </tr>
               </ng-template>
               
@@ -241,9 +241,6 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                 <p-card styleClass="game-card">
                   <ng-template pTemplate="header">
                     <div class="game-card-header">
-                      <div class="game-card-icon">
-                        <i class="pi pi-play"></i>
-                      </div>
                       <h3>{{ game.nom }}</h3>
                     </div>
                   </ng-template>
@@ -254,16 +251,15 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
                   
                   <div class="game-card-stats">
                     <div class="stat-item">
-                      <i class="pi pi-user"></i>
-                      <span>{{ game.min_players }} min</span>
-                    </div>
-                    <div class="stat-item">
-                      <i class="pi pi-users"></i>
-                      <span>{{ game.max_players }} max</span>
+                      @if (game.max_players == 1) {
+                        <i class="pi pi-user"></i><span style="font-weight: 700;">&nbsp;Solo ({{ game.min_players }})</span>
+                      } @else {
+                        <i class="pi pi-users"></i><span style="font-weight: 700;">&nbsp;Multijoueurs ({{ game.min_players }}-{{ game.max_players }})</span>
+                      }
                     </div>
                     <div class="stat-item">
                       <i class="pi pi-ticket"></i>
-                      <span>{{ game.ticket_cost }} ticket(s)</span>
+                      <span>&nbsp;{{ game.ticket_cost }} ticket(s)</span>
                     </div>
                   </div>
                   
@@ -449,19 +445,15 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
         .game-card-header {
           text-align: center;
           padding: var(--space-4);
-          
-          .game-card-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-full);
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            margin: 0 auto var(--space-3) auto;
-          }
+          width: 100%;
+          height: 60px;
+          border-radius: var(--radius-full);
+          background: var(--gradient-primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          margin: 0 auto var(--space-3) auto;
           
           h3 {
             margin: 0;
@@ -500,7 +492,7 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
         .game-card-actions {
           display: flex;
           gap: var(--space-2);
-          justify-content: center;
+          justify-content: space-between;
         }
       }
     }

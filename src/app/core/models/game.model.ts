@@ -3,7 +3,7 @@
 export interface Game {
   id: number;
   nom: string;
-  description?: string;
+  description: string;
   min_players: number;
   max_players: number;
   ticket_cost: number;
@@ -18,7 +18,7 @@ export interface Game {
 
 export interface GameCreate {
   nom: string;
-  description?: string;
+  description: string;
   min_players: number;
   max_players: number;
   ticket_cost: number;

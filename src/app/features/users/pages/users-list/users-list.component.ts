@@ -34,7 +34,10 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
   template: `
     <div class="page-container">
       <div class="page-header">
-        <h1><i class="pi pi-users"></i> Utilisateurs</h1>
+        <div>
+          <h1><i class="pi pi-users"></i> Liste des Utilisateurs supprimés</h1>
+          <i>Permet la restauration d'un compte utilisateur supprimé</i>
+        </div>
         <div class="page-actions">
           <p-button 
             icon="pi pi-refresh" 

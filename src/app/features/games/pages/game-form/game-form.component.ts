@@ -41,11 +41,11 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
             <div class="form-grid">
               <!-- Nom du jeu -->
               <div class="form-group col-12">
-                <label for="name" class="required">Nom du jeu</label>
-                <input id="name" type="text" pInputText formControlName="name"
-                       [class.ng-invalid]="isFieldInvalid('name')"
+                <label for="nom" class="required">Nom du jeu</label>
+                <input id="nom" type="text" pInputText formControlName="nom"
+                       [class.ng-invalid]="isFieldInvalid('nom')"
                        placeholder="Ex: Street Fighter II" />
-                <small class="p-error" *ngIf="isFieldInvalid('name')">
+                <small class="p-error" *ngIf="isFieldInvalid('nom')">
                   Le nom du jeu est requis
                 </small>
               </div>
@@ -60,39 +60,59 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
               
               <!-- Nombre de joueurs -->
               <div class="form-group col-6">
-                <label for="nb_min_player" class="required">Nombre minimum de joueurs</label>
-                <p-inputNumber id="nb_min_player" formControlName="nb_min_player"
+                <label for="min_players" class="required">Nombre minimum de joueurs</label>
+                <p-inputNumber id="min_players" formControlName="min_players"
                                [min]="1" [max]="10" [showButtons]="true"
-                               [class.ng-invalid]="isFieldInvalid('nb_min_player')">
+                               [class.ng-invalid]="isFieldInvalid('min_players')">
                 </p-inputNumber>
-                <small class="p-error" *ngIf="isFieldInvalid('nb_min_player')">
-                  @if (gameForm.get('nb_min_player')?.hasError('required')) {
+                <small class="p-error" *ngIf="isFieldInvalid('min_players')">
+                  @if (gameForm.get('min_players')?.hasError('required')) {
                     Ce champ est requis
                   }
-                  @if (gameForm.get('nb_min_player')?.hasError('min')) {
+                  @if (gameForm.get('min_players')?.hasError('min')) {
                     La valeur minimale est 1
                   }
                 </small>
               </div>
               
               <div class="form-group col-6">
-                <label for="nb_max_player" class="required">Nombre maximum de joueurs</label>
-                <p-inputNumber id="nb_max_player" formControlName="nb_max_player"
+                <label for="max_players" class="required">Nombre maximum de joueurs</label>
+                <p-inputNumber id="max_players" formControlName="max_players"
                                [min]="1" [max]="10" [showButtons]="true"
-                               [class.ng-invalid]="isFieldInvalid('nb_max_player')">
+                               [class.ng-invalid]="isFieldInvalid('max_players')">
                 </p-inputNumber>
-                <small class="p-error" *ngIf="isFieldInvalid('nb_max_player')">
-                  @if (gameForm.get('nb_max_player')?.hasError('required')) {
+                <small class="p-error" *ngIf="isFieldInvalid('max_players')">
+                  @if (gameForm.get('max_players')?.hasError('required')) {
                     Ce champ est requis
                   }
-                  @if (gameForm.get('nb_max_player')?.hasError('min')) {
+                  @if (gameForm.get('max_players')?.hasError('min')) {
                     La valeur minimale est 1
                   }
-                  @if (gameForm.get('nb_max_player')?.hasError('minPlayers')) {
+                  @if (gameForm.get('max_players')?.hasError('minPlayers')) {
                     Le nombre max doit être ≥ au nombre min
                   }
                 </small>
               </div>
+
+
+              <!-- Coût d'un ticket -->
+              <div class="form-group col-6">
+                <label for="ticket_cost" class="required">Coût en tickets</label>
+                <p-inputNumber id="ticket_cost" formControlName="ticket_cost"
+                               [min]="0" [max]="100" [showButtons]="true"
+                               [class.ng-invalid]="isFieldInvalid('ticket_cost')">
+                </p-inputNumber>
+                <small class="p-error" *ngIf="isFieldInvalid('ticket_cost')">
+                  @if (gameForm.get('ticket_cost')?.hasError('required')) {
+                    Ce champ est requis
+                  }
+                  @if (gameForm.get('ticket_cost')?.hasError('min')) {
+                    La valeur minimale est 0
+                  }
+                </small>
+              </div>
+
+
             </div>
             
             <!-- Actions -->
@@ -192,10 +212,11 @@ export class GameFormComponent implements OnInit {
    */
   private createForm(): FormGroup {
     return this.fb.group({
-      name: ['', Validators.required],
+      nom: ['', Validators.required],
       description: [''],
-      nb_min_player: [1, [Validators.required, Validators.min(1)]],
-      nb_max_player: [1, [Validators.required, Validators.min(1)]]
+      min_players: [1, [Validators.required, Validators.min(1)]],
+      max_players: [1, [Validators.required, Validators.min(1)]],
+      ticket_cost: [0, [Validators.required, Validators.min(0)]]
     }, { validators: this.playerCountValidator });
   }
   
@@ -203,20 +224,20 @@ export class GameFormComponent implements OnInit {
    * Validateur personnalisé pour vérifier la cohérence des nombres de joueurs
    */
   private playerCountValidator(group: FormGroup): {[key: string]: boolean} | null {
-    const min = group.get('nb_min_player')?.value;
-    const max = group.get('nb_max_player')?.value;
+    const min = group.get('min_players')?.value;
+    const max = group.get('max_players')?.value;
     
     if (min && max && max < min) {
-      group.get('nb_max_player')?.setErrors({ minPlayers: true });
+      group.get('max_players')?.setErrors({ minPlayers: true });
       return { minPlayers: true };
     }
     
     // Nettoyer l'erreur si elle n'est plus valide
-    const errors = group.get('nb_max_player')?.errors;
+    const errors = group.get('max_players')?.errors;
     if (errors?.['minPlayers']) {
       delete errors['minPlayers'];
       const hasErrors = Object.keys(errors).length > 0;
-      group.get('nb_max_player')?.setErrors(hasErrors ? errors : null);
+      group.get('max_players')?.setErrors(hasErrors ? errors : null);
     }
     
     return null;
@@ -230,10 +251,11 @@ export class GameFormComponent implements OnInit {
     this.gamesService.getGameById(id).subscribe({
       next: (game) => {
         this.gameForm.patchValue({
-          name: game.nom,
+          nom: game.nom,
           description: game.description,
-          nb_min_player: game.min_players,
-          nb_max_player: game.max_players
+          min_players: game.min_players,
+          max_players: game.max_players,
+          ticket_cost: game.ticket_cost ?? 0
         });
         this.loading = false;
       },

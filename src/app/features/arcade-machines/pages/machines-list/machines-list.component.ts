@@ -390,7 +390,7 @@ class MachineStatsCalculator {
                     </td>
                     <td>
                       <div class="action-buttons">
-                        <button 
+                        <!-- <button 
                           pButton 
                           pRipple 
                           icon="pi pi-eye" 
@@ -402,9 +402,9 @@ class MachineStatsCalculator {
                           tooltipPosition="top"
                           class="action-button hover-lift"
                           [routerLink]="['/arcade-machines/detail', machine.id]">
-                        </button>
+                        </button> -->
                         
-                        <button 
+                        <!-- <button 
                           pButton 
                           pRipple 
                           icon="pi pi-gamepad" 
@@ -416,9 +416,9 @@ class MachineStatsCalculator {
                           tooltipPosition="top"
                           class="action-button hover-scale"
                           (click)="configureGames(machine)">
-                        </button>
+                        </button> -->
                         
-                        <button 
+                        <!-- <button 
                           pButton 
                           pRipple 
                           icon="pi pi-pencil" 
@@ -430,7 +430,7 @@ class MachineStatsCalculator {
                           tooltipPosition="top"
                           class="action-button hover-glow"
                           [routerLink]="['/arcade-machines/edit', machine.id]">
-                        </button>
+                        </button> -->
                         
                         <button 
                           pButton 

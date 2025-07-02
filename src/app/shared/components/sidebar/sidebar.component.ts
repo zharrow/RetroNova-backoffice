@@ -121,11 +121,11 @@ interface MenuItem {
 })
 export class SidebarComponent {
   readonly menuItems = signal<MenuItem[]>([
-    { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
+    // { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/' },
     { label: 'Bornes d\'arcade', icon: 'pi pi-desktop', routerLink: '/arcade-machines' },
     { label: 'Jeux', icon: 'pi pi-play', routerLink: '/games' },
     { label: 'Utilisateurs', icon: 'pi pi-users', routerLink: '/users' },
     { label: 'Parties', icon: 'pi pi-ticket', routerLink: '/parties' },
-    { label: 'Statistiques', icon: 'pi pi-chart-bar', routerLink: '/statistics' }
+    // { label: 'Statistiques', icon: 'pi pi-chart-bar', routerLink: '/statistics' }
   ]);
 }
