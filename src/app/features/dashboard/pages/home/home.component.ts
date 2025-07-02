@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { forkJoin } from 'rxjs';
-import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
+import { ArcadesService } from '../../../../core/services/arcades.service';
 import { GamesService } from '../../../../core/services/games.service';
 import { UsersService } from '../../../../core/services/users.service';
 import { PartiesService } from '../../../../core/services/parties.service';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { MachinesListComponent } from "../../../arcade-machines/pages/machines-list/machines-list.component";
 
 interface DashboardCard {
   title: string;
@@ -23,24 +24,25 @@ interface DashboardCard {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardModule],
+  imports: [CommonModule, RouterModule, CardModule, MachinesListComponent],
   template: `
     <div class="dashboard-container">
       <h1>Tableau de bord</h1>
+      <app-machines-list></app-machines-list>
       
       @if (isLoading()) {
         <div class="loading-container">
-          <!-- <app-loader size="large"></app-loader> -->
+          <!-- <app-loader size="large" message="Chargement des données..."></app-loader> -->
         </div>
       }
       
-      @if (!isLoading()) {
+      <!-- @if (!isLoading()) {
         <div class="dashboard-cards">
           @for (card of dashboardCards(); track card.title) {
             <p-card styleClass="dashboard-card">
               <ng-template pTemplate="header">
                 <div class="card-header" [style.background-color]="card.color">
-                  <i [class]="'pi ' + card.icon"></i>
+                  <i [class]="card.icon"></i>
                   <h3>{{ card.title }}</h3>
                 </div>
               </ng-template>
@@ -51,16 +53,17 @@ interface DashboardCard {
             </p-card>
           }
         </div>
-      }
+      } -->
     </div>
   `,
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  private readonly arcadeMachinesService = inject(ArcadeMachinesService);
-  private readonly gamesService = inject(GamesService);
-  private readonly usersService = inject(UsersService);
-  private readonly partiesService = inject(PartiesService);
+  // private readonly arcadesService = inject(ArcadesService);
+  // private readonly gamesService = inject(GamesService);
+  // private readonly usersService = inject(UsersService);
+  // private readonly partiesService = inject(PartiesService);
+  // private readonly promosService = inject(PromosService);
 
   readonly isLoading = signal(true);
   readonly dashboardCards = signal<DashboardCard[]>([]);
@@ -76,10 +79,10 @@ export class HomeComponent implements OnInit {
     this.isLoading.set(true);
     
     forkJoin({
-      users: this.usersService.getAllUsers(),
-      machines: this.arcadeMachinesService.getAllMachines(),
-      games: this.gamesService.getAllGames(),
-      activeParties: this.partiesService.getActiveParties()
+      // users: this.usersService.getAllUsers(),
+      // machines: this.arcadesService.getAllArcades(),
+      // games: this.gamesService.getAllGames(),
+      // activeParties: this.partiesService.getActiveParties()
     }).subscribe({
       next: (data) => {
         this.updateDashboardCards(data);
@@ -99,7 +102,7 @@ export class HomeComponent implements OnInit {
     const cards: DashboardCard[] = [
       {
         title: 'Utilisateurs',
-        icon: 'pi-users',
+        icon: 'fas fa-users',
         value: data.users.length,
         link: '/users',
         linkText: 'Voir les utilisateurs',
@@ -107,7 +110,7 @@ export class HomeComponent implements OnInit {
       },
       {
         title: 'Bornes d\'arcade',
-        icon: 'pi-desktop',
+        icon: 'fas fa-desktop',
         value: data.machines.length,
         link: '/arcade-machines',
         linkText: 'Gérer les bornes',
@@ -115,7 +118,7 @@ export class HomeComponent implements OnInit {
       },
       {
         title: 'Jeux',
-        icon: 'pi-play',
+        icon: 'fas fa-gamepad',
         value: data.games.length,
         link: '/games',
         linkText: 'Voir les jeux',
@@ -123,7 +126,7 @@ export class HomeComponent implements OnInit {
       },
       {
         title: 'Parties en cours',
-        icon: 'pi-ticket',
+        icon: 'fas fa-ticket',
         value: data.activeParties.length,
         link: '/parties',
         linkText: 'Voir les parties',

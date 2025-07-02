@@ -1,96 +1,80 @@
-// src/app/core/services/auth.service.ts
+// src/app/core/auth/auth.service.ts
 
-import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
-import { 
-  User, 
-  UserCreate, 
-  LoginCredentials, 
-  AuthToken 
-} from '../models/user.model';
-import { TokenService } from './token.service';
-import { environment } from '../../../environnements/environment';
+import { Observable, from, of, BehaviorSubject, switchMap, catchError, tap } from 'rxjs';
+import { User, UserCreate } from '../models/user.model';
+import { environment } from '../../../environments/environment.development';
 
-/**
- * Service gérant l'authentification et l'état de l'utilisateur
- * Compatible avec SSR
- */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly firebaseAuth = inject(AngularFireAuth);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly tokenService = inject(TokenService);
-  private readonly platformId = inject(PLATFORM_ID);
   
   private readonly baseUrl = `${environment.apiUrl}/auth`;
   
-  // Signal pour l'utilisateur courant
+  // Signals pour l'état d'authentification
   private readonly currentUserSubject = new BehaviorSubject<User | null>(null);
   readonly currentUser$ = this.currentUserSubject.asObservable();
   
-  // Signals réactifs
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => !!this.currentUser());
   readonly isLoading = signal(false);
-  
+
   constructor() {
-    // Restaurer l'utilisateur uniquement côté client
-    if (isPlatformBrowser(this.platformId)) {
-      this.initializeAuth();
-    }
+    this.initializeAuth();
   }
-  
+
   /**
    * Initialise l'authentification au démarrage
    */
   private initializeAuth(): void {
-    const token = this.tokenService.getToken();
-    if (token && this.tokenService.isTokenValid()) {
-      // TODO: Récupérer les infos utilisateur depuis l'API
-      const userData = this.tokenService.getTokenData();
-      if (userData) {
-        // Simuler un utilisateur basique
-        this.setCurrentUser({
-          _id: 'temp',
-          username: userData.sub,
-          email: `${userData.sub}@example.com`,
-          is_active: true,
-          is_superuser: false,
-          created_at: new Date(),
-          updated_at: new Date()
-        });
-      }
-    }
+    this.firebaseAuth.authState.pipe(
+      switchMap(firebaseUser => {
+        if (firebaseUser) {
+          // Récupérer les infos utilisateur depuis notre API
+          return this.http.get<User>(`${this.baseUrl}/me`).pipe(
+            catchError(() => of(null))
+          );
+        }
+        return of(null);
+      })
+    ).subscribe(user => {
+      this.setCurrentUser(user);
+    });
   }
-  
+
   /**
-   * Connexion d'un utilisateur
+   * Connexion avec email/password Firebase
    */
-  login(credentials: LoginCredentials): Observable<AuthToken> {
+  login(email: string, password: string): Observable<User | null> {
     this.isLoading.set(true);
     
-    const formData = new FormData();
-    formData.append('username', credentials.username);
-    formData.append('password', credentials.password);
-    
-    return this.http.post<AuthToken>(`${this.baseUrl}/login`, formData).pipe(
-      tap(response => {
-        this.tokenService.saveToken(response.access_token);
-        this.handleSuccessfulAuth(response);
+    return from(this.firebaseAuth.signInWithEmailAndPassword(email, password)).pipe(
+      switchMap(credential => {
+        if (!credential.user) {
+          throw new Error('Échec de la connexion');
+        }
+        
+        // Récupérer les infos utilisateur depuis notre API
+        return this.http.get<User>(`${this.baseUrl}/me`);
+      }),
+      tap(user => {
+        this.setCurrentUser(user);
         this.isLoading.set(false);
       }),
       catchError(error => {
         this.isLoading.set(false);
-        return throwError(() => error);
+        throw error;
       })
     );
   }
-  
+
   /**
    * Inscription d'un nouvel utilisateur
    */
@@ -98,76 +82,66 @@ export class AuthService {
     this.isLoading.set(true);
     
     return this.http.post<User>(`${this.baseUrl}/register`, userData).pipe(
-      tap(() => {
+      tap(user => {
+        this.setCurrentUser(user);
         this.isLoading.set(false);
       }),
       catchError(error => {
         this.isLoading.set(false);
-        return throwError(() => error);
+        throw error;
       })
     );
   }
-  
+
   /**
    * Déconnexion
    */
-  logout(): void {
-    this.tokenService.removeToken();
-    this.setCurrentUser(null);
-    this.router.navigate(['/auth/login']);
+  logout(): Observable<void> {
+    return from(this.firebaseAuth.signOut()).pipe(
+      tap(() => {
+        this.setCurrentUser(null);
+        this.router.navigate(['/auth/login']);
+      })
+    );
   }
-  
+
   /**
-   * Rafraîchit le token (si implémenté côté API)
+   * Récupère le token Firebase pour les requêtes API
    */
-  refreshToken(): Observable<AuthToken> {
-    // TODO: Implémenter le refresh token
-    return throwError(() => new Error('Refresh token not implemented'));
+  getFirebaseToken(): Observable<string | null> {
+    return this.firebaseAuth.idToken;
   }
-  
+
   /**
-   * Gère une authentification réussie
+   * Vérifie si l'utilisateur est authentifié
    */
-  private handleSuccessfulAuth(token: AuthToken): void {
-    const tokenData = this.tokenService.getTokenData();
-    if (tokenData) {
-      // TODO: Récupérer les vraies infos utilisateur depuis l'API
-      this.setCurrentUser({
-        _id: 'temp',
-        username: tokenData.sub,
-        email: `${tokenData.sub}@example.com`,
-        is_active: true,
-        is_superuser: false,
-        created_at: new Date(),
-        updated_at: new Date()
-      });
-    }
+  isAuthenticated$(): Observable<boolean> {
+    return this.firebaseAuth.authState.pipe(
+      switchMap(user => of(!!user))
+    );
   }
-  
+
   /**
-   * Met à jour l'utilisateur courant
+   * Récupère l'utilisateur actuel
+   */
+  getCurrentUser(): User | null {
+    return this.currentUser();
+  }
+
+  /**
+   * Met à jour l'utilisateur actuel
    */
   private setCurrentUser(user: User | null): void {
     this.currentUser.set(user);
     this.currentUserSubject.next(user);
   }
-  
+
   /**
-   * Vérifie si l'utilisateur est authentifié
+   * Récupère les informations de l'utilisateur connecté
    */
-  checkAuthentication(): boolean {
-    if (!this.tokenService.getToken() || !this.tokenService.isTokenValid()) {
-      this.setCurrentUser(null);
-      return false;
-    }
-    return true;
-  }
-  
-  /**
-   * Récupère le nom d'utilisateur depuis le token
-   */
-  getUsernameFromToken(): string | null {
-    const tokenData = this.tokenService.getTokenData();
-    return tokenData?.sub || null;
+  getMe(): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/me`).pipe(
+      tap(user => this.setCurrentUser(user))
+    );
   }
 }

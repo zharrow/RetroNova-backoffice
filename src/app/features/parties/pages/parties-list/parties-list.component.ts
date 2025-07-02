@@ -11,11 +11,11 @@ import { MessageService } from 'primeng/api';
 import { PartiesService } from '../../../../core/services/parties.service';
 import { UsersService } from '../../../../core/services/users.service';
 import { GamesService } from '../../../../core/services/games.service';
-import { ArcadeMachinesService } from '../../../../core/services/arcade-machines.service';
+import { ArcadesService } from '../../../../core/services/arcades.service';
 import { Party } from '../../../../core/models/party.model';
 import { User } from '../../../../core/models/user.model';
 import { Game } from '../../../../core/models/game.model';
-import { ArcadeMachine } from '../../../../core/models/arcade-machine.model';
+import { Arcade } from '../../../../core/models/arcade.model';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 import { forkJoin } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -223,13 +223,13 @@ export class PartiesListComponent implements OnInit {
   // Cache pour les entités
   private users: User[] = [];
   private games: Game[] = [];
-  private machines: ArcadeMachine[] = [];
+  private machines: Arcade[] = [];
   
   constructor(
     private partiesService: PartiesService,
     private usersService: UsersService,
     private gamesService: GamesService,
-    private arcadeMachinesService: ArcadeMachinesService,
+    private arcadesService: ArcadesService,
     private messageService: MessageService,
     private dialogService: DialogService
   ) {}
@@ -248,7 +248,7 @@ export class PartiesListComponent implements OnInit {
       parties: this.partiesService.getAllParties(),
       users: this.usersService.getAllUsers(),
       games: this.gamesService.getAllGames(),
-      machines: this.arcadeMachinesService.getAllMachines()
+      machines: this.arcadesService.getAllArcades()
     }).subscribe({
       next: (data) => {
         this.users = data.users;
@@ -286,16 +286,16 @@ export class PartiesListComponent implements OnInit {
       
       const getPlayerName = (player: User | undefined): string | undefined => {
         if (!player) return undefined;
-        const fullName = `${player.first_name || ''} ${player.last_name || ''}`.trim();
-        return fullName || player.publique_id;
+        const fullName = `${player.nom || ''} ${player.prenom || ''}`.trim();
+        return fullName || player.firebase_uid;
       };
       
       return {
         ...party,
         player1_name: getPlayerName(player1),
         player2_name: getPlayerName(player2),
-        game_name: game?.name,
-        machine_name: machine?.name || undefined
+        game_name: game?.nom,
+        machine_name: machine?.nom || undefined
       };
     });
   }

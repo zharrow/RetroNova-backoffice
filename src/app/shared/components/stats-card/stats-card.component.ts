@@ -35,6 +35,7 @@ export interface StatsData {
   readonly trend?: TrendData;
   readonly subtitle?: string;
   readonly loading?: boolean;
+  readonly format?: 'number' | 'currency' | 'percentage' | 'fileSize' | 'duration' | 'shortNumber';
 }
 
 /**
@@ -79,14 +80,14 @@ export interface StatsData {
             </div>
 
             <!-- Tendance -->
-            @if (data().trend) {
+            @if (data().trend; as trend) {
               <div [class]="trendClasses()">
                 <i [class]="trendIconClasses()"></i>
                 <span class="trend-value">
                   {{ Math.abs(data().trend!.value) }}%
                 </span>
-                @if (data().trend?.period) {
-                  <span class="trend-period">{{ data().trend.period }}</span>
+                @if (trend.period) {
+                  <span class="trend-period">{{ trend.period }}</span>
                 }
               </div>
             }
@@ -147,7 +148,13 @@ export interface StatsData {
     }
 
     .stats-content {
-      @apply relative flex items-start gap-4 p-6 h-full;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.5rem;
+      height: 100%;
+      // @apply relative flex items-start gap-4 p-6 h-full;
     }
 
     .stats-icon-container {

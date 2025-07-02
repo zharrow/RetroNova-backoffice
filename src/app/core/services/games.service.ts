@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { Game, GameCreate, GameUpdate } from '../models/game.model';
 
@@ -7,29 +7,69 @@ import { Game, GameCreate, GameUpdate } from '../models/game.model';
   providedIn: 'root'
 })
 export class GamesService {
-  constructor(private apiService: ApiService) {}
+  private readonly apiService = inject(ApiService);
   
-  getAllGames(includeDeleted: boolean = false): Observable<Game[]> {
-    return this.apiService.get<Game[]>('/games', { include_deleted: includeDeleted });
+  // Signal pour la liste des jeux en cache
+  private readonly gamesSignal = signal<Game[]>([]);
+  readonly games = this.gamesSignal.asReadonly();
+
+  /**
+   * Récupère tous les jeux
+   */
+  getAllGames(): Observable<Game[]> {
+    return this.apiService.get<Game[]>('/games').pipe(
+      tap(games => this.gamesSignal.set(games))
+    );
   }
-  
-  getGameById(id: string, includeDeleted: boolean = false): Observable<Game> {
-    return this.apiService.get<Game>(`/games/${id}`, { include_deleted: includeDeleted });
+
+  /**
+   * Récupère un jeu par son ID
+   */
+  getGameById(id: string): Observable<Game> {
+    return this.apiService.get<Game>(`/games/${id}`);
   }
-  
-  createGame(game: GameCreate): Observable<Game> {
-    return this.apiService.post<Game>('/games', game);
+
+  /**
+   * Crée un nouveau jeu (admin)
+   */
+  createGame(gameData: GameCreate): Observable<Game> {
+    return this.apiService.post<Game>('/admin/games', gameData).pipe(
+      tap(newGame => {
+        this.gamesSignal.update(games => [...games, newGame]);
+      })
+    );
   }
-  
-  updateGame(id: string, game: GameUpdate): Observable<Game> {
-    return this.apiService.put<Game>(`/games/${id}`, game);
+
+  /**
+   * Met à jour un jeu (admin)
+   */
+  updateGame(id: string, gameData: GameUpdate): Observable<Game> {
+    return this.apiService.put<Game>(`/admin/games/${id}`, gameData).pipe(
+      tap(updatedGame => {
+        this.gamesSignal.update(games => 
+          games.map(game => game.id.toString() === id ? updatedGame : game)
+        );
+      })
+    );
   }
-  
-  deleteGame(id: string, hardDelete: boolean = false): Observable<any> {
-    return this.apiService.delete(`/games/${id}`, { hard_delete: hardDelete });
+
+  /**
+   * Supprime un jeu (admin)
+   */
+  deleteGame(id: string): Observable<any> {
+    return this.apiService.delete(`/admin/games/${id}`).pipe(
+      tap(() => {
+        this.gamesSignal.update(games => 
+          games.filter(game => game.id.toString() !== id)
+        );
+      })
+    );
   }
-  
-  restoreGame(id: string): Observable<Game> {
-    return this.apiService.post<Game>(`/games/${id}/restore`, {});
+
+  /**
+   * Efface le cache des jeux
+   */
+  clearCache(): void {
+    this.gamesSignal.set([]);
   }
 }

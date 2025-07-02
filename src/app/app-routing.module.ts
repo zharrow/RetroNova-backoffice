@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './core/auth/auth.guard';
+import { authGuard } from './core/auth/auth.guard';
 
 const routes: Routes = [
   {
@@ -9,32 +9,32 @@ const routes: Routes = [
   },
   {
     path: '',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
     path: 'arcade-machines',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/arcade-machines/arcade-machines.module').then(m => m.ArcadeMachinesModule)
   },
   {
     path: 'games',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/games/games.module').then(m => m.GamesModule)
   },
   {
     path: 'users',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/users/users.module').then(m => m.UsersModule)
   },
   {
     path: 'statistics',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/statistics/statistics.module').then(m => m.StatisticsModule)
   },
   {
     path: 'parties',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/parties/parties.module').then(m => m.PartiesModule)
   },
   { path: '**', redirectTo: '' }
