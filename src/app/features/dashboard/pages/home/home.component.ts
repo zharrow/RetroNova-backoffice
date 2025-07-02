@@ -34,7 +34,7 @@ interface DashboardCard {
         </div>
       }
       
-      @if (!isLoading()) {
+      <!-- @if (!isLoading()) {
         <div class="dashboard-cards">
           @for (card of dashboardCards(); track card.title) {
             <p-card styleClass="dashboard-card">
@@ -51,16 +51,17 @@ interface DashboardCard {
             </p-card>
           }
         </div>
-      }
+      } -->
     </div>
   `,
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  private readonly arcadesService = inject(ArcadesService);
-  private readonly gamesService = inject(GamesService);
-  private readonly usersService = inject(UsersService);
-  private readonly partiesService = inject(PartiesService);
+  // private readonly arcadesService = inject(ArcadesService);
+  // private readonly gamesService = inject(GamesService);
+  // private readonly usersService = inject(UsersService);
+  // private readonly partiesService = inject(PartiesService);
+  // private readonly promosService = inject(PromosService);
 
   readonly isLoading = signal(true);
   readonly dashboardCards = signal<DashboardCard[]>([]);
@@ -76,10 +77,10 @@ export class HomeComponent implements OnInit {
     this.isLoading.set(true);
     
     forkJoin({
-      users: this.usersService.getAllUsers(),
-      machines: this.arcadesService.getAllArcades(),
-      games: this.gamesService.getAllGames(),
-      activeParties: this.partiesService.getActiveParties()
+      // users: this.usersService.getAllUsers(),
+      // machines: this.arcadesService.getAllArcades(),
+      // games: this.gamesService.getAllGames(),
+      // activeParties: this.partiesService.getActiveParties()
     }).subscribe({
       next: (data) => {
         this.updateDashboardCards(data);

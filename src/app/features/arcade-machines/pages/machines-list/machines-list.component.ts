@@ -27,9 +27,11 @@ interface EnrichedArcade extends Arcade {
   readonly game1_name?: string;
   readonly game2_name?: string;
   readonly utilization_rate: number;
+  readonly has_both_slots: boolean;
+  readonly active_slots: number;
 }
 
-type MachineStatus = 'active' | 'inactive' | 'maintenance';
+type MachineStatus = 'active' | 'inactive' | 'maintenance' | 'partial';
 type ViewMode = 'table' | 'grid';
 
 /**
@@ -41,7 +43,7 @@ abstract class ViewModeStrategy {
 
 class TableViewStrategy extends ViewModeStrategy {
   render(machines: EnrichedArcade[]) {
-    return machines; // Table utilise directement les données
+    return machines;
   }
 }
 
@@ -79,6 +81,7 @@ class MachineStatsCalculator {
     const total = machines.length;
     const active = machines.filter(m => m.status === 'active').length;
     const configured = machines.filter(m => m.games_count > 0).length;
+    const fullyConfigured = machines.filter(m => m.has_both_slots).length;
     const locations = new Set(machines.map(m => m.localisation).filter(Boolean)).size;
 
     return [
@@ -97,11 +100,11 @@ class MachineStatsCalculator {
         trend: { value: 12, direction: 'up', period: 'cette semaine' }
       },
       {
-        title: 'Bornes configurées',
-        value: configured,
+        title: 'Entièrement configurées',
+        value: fullyConfigured,
         icon: 'pi-cog',
         color: 'info',
-        subtitle: `${Math.round((configured / total) * 100)}% du total`
+        subtitle: `${Math.round((fullyConfigured / total) * 100)}% du total`
       },
       {
         title: 'Emplacements',
@@ -130,16 +133,20 @@ class MachineStatsCalculator {
     CardModule,
     BadgeModule,
     LoaderComponent,
-    StatsCardComponent
   ],
   providers: [ConfirmationService],
   template: `
     <div class="page-container animate-fade-in">
       <div class="page-header">
-        <h1 class="page-title">
-          <i class="pi pi-desktop neon-glow"></i> 
-          Bornes d'Arcade
-        </h1>
+        <div class="page-title-section">
+          <h1 class="page-title">
+            <i class="pi pi-desktop neon-glow"></i> 
+            Bornes d'Arcade
+          </h1>
+          <p class="page-subtitle">
+            Gestion et monitoring de vos bornes d'arcade
+          </p>
+        </div>
         <div class="page-actions">
           <button 
             pButton 
@@ -165,7 +172,7 @@ class MachineStatsCalculator {
       </div>
 
       <!-- Cartes de statistiques -->
-      @if (!loading()) {
+      <!-- @if (!loading()) {
         <div class="stats-section stagger-fade-in">
           @for (stat of machineStats(); track stat.title) {
             <app-stats-card 
@@ -177,24 +184,30 @@ class MachineStatsCalculator {
             </app-stats-card>
           }
         </div>
-      }
+      } -->
       
       <div class="page-content">
         @if (loading()) {
-          <app-loader size="large">Chargement des bornes d'arcade...</app-loader>
+          <app-loader size="large">
+            <div class="loading-content">
+              <i class="pi pi-spin pi-cog loading-icon"></i>
+              <span>Chargement des bornes d'arcade...</span>
+            </div>
+          </app-loader>
         } @else {
           <div class="controls-bar">
             <div class="search-container">
-              <span class="p-input-icon-left">
-                <i class="pi pi-search"></i>
+              <span class="p-input-icon-left search-wrapper">
+                <i class="pi pi-search search-icon"></i>
                 <input 
                   pInputText 
                   type="text" 
                   placeholder="Rechercher une borne..." 
                   (input)="handleGlobalFilter($event)"
-                  class="search-input" />
+                  class="search-input gaming-input" />
               </span>
               <div class="search-results">
+                <i class="pi pi-filter-fill"></i>
                 {{ filteredCount() }} machine(s) trouvée(s)
               </div>
             </div>
@@ -208,7 +221,8 @@ class MachineStatsCalculator {
                   [severity]="viewMode() === 'table' ? 'primary' : 'secondary'"
                   [outlined]="viewMode() !== 'table'"
                   (click)="setViewMode('table')"
-                  pTooltip="Vue tableau">
+                  pTooltip="Vue tableau"
+                  class="view-btn">
                 </button>
                 <button 
                   pButton 
@@ -217,14 +231,15 @@ class MachineStatsCalculator {
                   [severity]="viewMode() === 'grid' ? 'primary' : 'secondary'"
                   [outlined]="viewMode() !== 'grid'"
                   (click)="setViewMode('grid')"
-                  pTooltip="Vue grille">
+                  pTooltip="Vue grille"
+                  class="view-btn">
                 </button>
               </div>
             </div>
           </div>
 
           @if (viewMode() === 'table') {
-            <!-- Vue tableau avec animations -->
+            <!-- Vue tableau améliorée -->
             <div class="table-container animate-scale-in">
               <p-table 
                 #dt 
@@ -243,16 +258,35 @@ class MachineStatsCalculator {
                 <ng-template pTemplate="header">
                   <tr>
                     <th pSortableColumn="nom" style="width: 25%">
-                      Nom <p-sortIcon field="nom"></p-sortIcon>
+                      <div class="header-content">
+                        <i class="pi pi-desktop"></i>
+                        Nom <p-sortIcon field="nom"></p-sortIcon>
+                      </div>
                     </th>
                     <th pSortableColumn="localisation" style="width: 20%">
-                      Localisation <p-sortIcon field="localisation"></p-sortIcon>
+                      <div class="header-content">
+                        <i class="pi pi-map-marker"></i>
+                        Localisation <p-sortIcon field="localisation"></p-sortIcon>
+                      </div>
                     </th>
-                    <th style="width: 20%">Jeux</th>
+                    <th style="width: 25%">
+                      <div class="header-content">
+                        <i class="pi pi-gamepad"></i>
+                        Configuration Jeux
+                      </div>
+                    </th>
                     <th pSortableColumn="status" style="width: 15%">
-                      Statut <p-sortIcon field="status"></p-sortIcon>
+                      <div class="header-content">
+                        <i class="pi pi-circle"></i>
+                        Statut <p-sortIcon field="status"></p-sortIcon>
+                      </div>
                     </th>
-                    <th style="width: 20%">Actions</th>
+                    <th style="width: 15%">
+                      <div class="header-content">
+                        <i class="pi pi-cog"></i>
+                        Actions
+                      </div>
+                    </th>
                   </tr>
                 </ng-template>
                 
@@ -263,43 +297,96 @@ class MachineStatsCalculator {
                       <div class="machine-name-cell">
                         <div class="machine-icon" [class]="getMachineIconClass(machine.status)">
                           <i class="pi pi-desktop"></i>
+                          @if (machine.games_count > 0) {
+                            <div class="games-indicator">{{ machine.games_count }}</div>
+                          }
                         </div>
                         <div class="machine-info">
                           <span class="machine-name">{{ machine.nom }}</span>
                           @if (machine.description) {
                             <span class="machine-description">{{ machine.description }}</span>
                           }
+                          <!-- <div class="machine-meta"> -->
+                            <!-- <span class="meta-item">
+                              <i class="pi pi-calendar"></i>
+                              Créée le {{ formatDate(machine.created_at) }}
+                            </span> -->
+                          <!-- </div> -->
                         </div>
                       </div>
                     </td>
                     <td>
                       <div class="location-cell">
-                        <i class="pi pi-map-marker location-icon"></i>
-                        <span>{{ machine.localisation || 'Non défini' }}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="games-cell">
-                        @if (machine.games && machine.games.length > 0) {
-                          @for (game of machine.games; track game.id) {
-                            <p-tag 
-                              [value]="'Slot ' + game.slot_number + ': ' + game.nom" 
-                              [severity]="getSlotSeverity(game.slot_number)"
-                              styleClass="game-tag animate-pulse">
-                            </p-tag>
-                          }
-                        } @else {
-                          <span class="no-games">Aucun jeu configuré</span>
+                        <div class="location-main">
+                          <i class="pi pi-map-marker location-icon"></i>
+                          <span class="location-name">{{ machine.localisation || 'Non défini' }}</span>
+                        </div>
+                        @if (machine.latitude && machine.longitude) {
+                          <div class="coordinates">
+                            <span class="coord-label">GPS:</span>
+                            <span class="coord-value">{{ machine.latitude | number:'1.4-4' }}, {{ machine.longitude | number:'1.4-4' }}</span>
+                          </div>
                         }
                       </div>
                     </td>
                     <td>
-                      <p-tag 
-                        [value]="getStatusLabel(machine.status)" 
-                        [severity]="getStatusSeverity(machine.status)"
-                        [icon]="getStatusIcon(machine.status)"
-                        styleClass="status-tag">
-                      </p-tag>
+                      <div class="games-configuration">
+                        @if (machine.games && machine.games.length > 0) {
+                          <div class="slots-container">
+                            @for (slot of [1, 2]; track slot) {
+                              <div class="slot-item" [class]="getSlotClass(machine, slot)">
+                                <div class="slot-header">
+                                  <span class="slot-label">Slot {{ slot }}</span>
+                                  <span class="slot-status" [class]="getSlotStatusClass(machine, slot)">
+                                    {{ getSlotStatusLabel(machine, slot) }}
+                                  </span>
+                                </div>
+                                @if (getGameForSlot(machine, slot); as game) {
+                                  <div class="game-info">
+                                    <span class="game-name">{{ game.nom }}</span>
+                                    <span class="game-players">{{ game.min_players }}-{{ game.max_players }} joueurs</span>
+                                  </div>
+                                } @else {
+                                  <div class="empty-slot">
+                                    <i class="pi pi-plus-circle"></i>
+                                    <span>Libre</span>
+                                  </div>
+                                }
+                              </div>
+                            }
+                          </div>
+                        } @else {
+                          <div class="no-games-configured">
+                            <i class="pi pi-exclamation-triangle"></i>
+                            <span>Aucun jeu configuré</span>
+                            <button 
+                              pButton 
+                              pRipple 
+                              icon="pi pi-plus" 
+                              label="Configurer"
+                              size="small"
+                              severity="info"
+                              text
+                              (click)="configureGames(machine)">
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    </td>
+                    <td>
+                      <div class="status-cell">
+                        <p-tag 
+                          [value]="getStatusLabel(machine.status)" 
+                          [severity]="getStatusSeverity(machine.status)"
+                          [icon]="getStatusIcon(machine.status)"
+                          styleClass="status-tag animate-pulse">
+                        </p-tag>
+                        @if (machine.status === 'partial') {
+                          <small class="status-detail">
+                            {{ machine.active_slots }}/2 slots actifs
+                          </small>
+                        }
+                      </div>
                     </td>
                     <td>
                       <div class="action-buttons">
@@ -314,15 +401,16 @@ class MachineStatsCalculator {
                           pTooltip="Voir les détails" 
                           tooltipPosition="top"
                           class="action-button hover-lift"
-                          [routerLink]="['/arcade-machines', machine.id]">
+                          [routerLink]="['/arcade-machines/detail', machine.id]">
                         </button>
                         
                         <button 
                           pButton 
                           pRipple 
-                          icon="pi pi-cog" 
+                          icon="pi pi-gamepad" 
                           [rounded]="true"
                           text
+                          severity="danger"
                           size="small"
                           pTooltip="Configurer les jeux" 
                           tooltipPosition="top"
@@ -384,58 +472,87 @@ class MachineStatsCalculator {
               </p-table>
             </div>
           } @else {
-            <!-- Vue grille avec effet de parallaxe -->
+            <!-- Vue grille améliorée -->
             <div class="machines-grid animate-scale-in">
               @for (machine of displayedMachines(); track machine.id; let i = $index) {
                 <div class="machine-card-container stagger-fade-in" 
                      [style.animation-delay]="(i * 0.1) + 's'">
                   <p-card styleClass="machine-card gaming-card hover-lift">
                     <ng-template pTemplate="header">
-                      <div class="machine-card-header">
-                        <div class="machine-card-icon" 
-                             [class]="getMachineIconClass(machine.status)">
+                      <div class="machine-card-header" [class]="'status-' + machine.status">
+                        <div class="machine-card-icon" [class]="getMachineIconClass(machine.status)">
                           <i class="pi pi-desktop"></i>
-                          <p-badge 
-                            [value]="machine.games_count.toString()" 
-                            severity="info"
-                            styleClass="games-badge">
-                          </p-badge>
+                          @if (machine.games_count > 0) {
+                            <p-badge 
+                              [value]="machine.games_count.toString()" 
+                              severity="info"
+                              styleClass="games-badge">
+                            </p-badge>
+                          }
                         </div>
-                        <h3 class="machine-card-title">{{ machine.nom }}</h3>
-                        <p-tag 
-                          [value]="getStatusLabel(machine.status)" 
-                          [severity]="getStatusSeverity(machine.status)"
-                          styleClass="status-tag-card">
-                        </p-tag>
+                        <div class="card-title-section">
+                          <h3 class="machine-card-title">{{ machine.nom }}</h3>
+                          <p-tag 
+                            [value]="getStatusLabel(machine.status)" 
+                            [severity]="getStatusSeverity(machine.status)"
+                            [icon]="getStatusIcon(machine.status)"
+                            styleClass="status-tag-card">
+                          </p-tag>
+                        </div>
                       </div>
                     </ng-template>
                     
-                    @if (machine.description) {
-                      <p class="machine-card-description">{{ machine.description }}</p>
-                    }
-                    
-                    <div class="machine-card-info">
-                      <div class="info-item">
-                        <i class="pi pi-map-marker location-icon"></i>
-                        <span>{{ machine.localisation || 'Non défini' }}</span>
-                      </div>
+                    <div class="machine-card-content">
+                      @if (machine.description) {
+                        <p class="machine-card-description">{{ machine.description }}</p>
+                      }
                       
-                      @if (machine.games && machine.games.length > 0) {
-                        <div class="games-list">
-                          <h4>Jeux configurés :</h4>
-                          @for (game of machine.games; track game.id) {
-                            <div class="game-item animate-shimmer">
-                              <span class="slot-number">Slot {{ game.slot_number }}</span>
-                              <span class="game-name">{{ game.nom }}</span>
+                      <div class="machine-card-info">
+                        <div class="info-item">
+                          <i class="pi pi-map-marker location-icon"></i>
+                          <span>{{ machine.localisation || 'Non défini' }}</span>
+                        </div>
+                        
+                        @if (machine.latitude && machine.longitude) {
+                          <div class="info-item coordinates">
+                            <i class="pi pi-compass"></i>
+                            <span>{{ machine.latitude | number:'1.2-2' }}, {{ machine.longitude | number:'1.2-2' }}</span>
+                          </div>
+                        }
+                        
+                        <!-- Configuration des slots en mode carte -->
+                        <div class="card-slots-section">
+                          <h4 class="slots-title">
+                            <i class="pi pi-gamepad"></i>
+                            Configuration des jeux
+                          </h4>
+                          @if (machine.games && machine.games.length > 0) {
+                            <div class="card-slots-grid">
+                              @for (slot of [1, 2]; track slot) {
+                                <div class="card-slot-item" [class]="getSlotClass(machine, slot)">
+                                  <div class="slot-number">{{ slot }}</div>
+                                  @if (getGameForSlot(machine, slot); as game) {
+                                    <div class="slot-game">
+                                      <span class="game-name">{{ game.nom }}</span>
+                                      <span class="game-meta">{{ game.min_players }}-{{ game.max_players }}p</span>
+                                    </div>
+                                  } @else {
+                                    <div class="slot-empty">
+                                      <i class="pi pi-plus"></i>
+                                      <span>Libre</span>
+                                    </div>
+                                  }
+                                </div>
+                              }
+                            </div>
+                          } @else {
+                            <div class="no-games-card">
+                              <i class="pi pi-exclamation-triangle warning-icon"></i>
+                              <span>Aucun jeu configuré</span>
                             </div>
                           }
                         </div>
-                      } @else {
-                        <div class="no-games-card">
-                          <i class="pi pi-exclamation-triangle warning-icon"></i>
-                          <span>Aucun jeu configuré</span>
-                        </div>
-                      }
+                      </div>
                     </div>
                     
                     <ng-template pTemplate="footer">
@@ -443,7 +560,7 @@ class MachineStatsCalculator {
                         <button 
                           pButton 
                           pRipple 
-                          label="Voir" 
+                          label="Détails" 
                           icon="pi pi-eye"
                           severity="info"
                           outlined
@@ -455,8 +572,9 @@ class MachineStatsCalculator {
                         <button 
                           pButton 
                           pRipple 
-                          label="Config" 
-                          icon="pi pi-cog"
+                          label="Jeux" 
+                          icon="pi pi-gamepad"
+                          severity="danger"
                           outlined
                           size="small"
                           class="card-action-btn"
@@ -471,6 +589,7 @@ class MachineStatsCalculator {
                           outlined
                           size="small"
                           class="card-action-btn"
+                          pTooltip="Éditer"
                           [routerLink]="['/arcade-machines/edit', machine.id]">
                         </button>
                       </div>
@@ -490,532 +609,7 @@ class MachineStatsCalculator {
       styleClass="gaming-confirm-dialog">
     </p-confirmDialog>
   `,
-  styles: [`
-    /* Page Layout */
-    .page-container {
-      padding: var(--space-6);
-      max-width: var(--content-max-width);
-      margin: 0 auto;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--space-8);
-      
-      .page-title {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        margin: 0;
-        font-size: var(--text-3xl);
-        font-weight: 800;
-        color: var(--text-color);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        
-        i {
-          color: var(--neon-blue);
-          font-size: var(--text-2xl);
-        }
-      }
-      
-      .page-actions {
-        display: flex;
-        gap: var(--space-3);
-        align-items: center;
-      }
-    }
-
-    /* Stats Section */
-    .stats-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--space-6);
-      margin-bottom: var(--space-8);
-    }
-
-    /* Controls Bar */
-    .controls-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--space-6);
-      padding: var(--space-4);
-      background: var(--surface-card);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-lg);
-      
-      .search-container {
-        display: flex;
-        align-items: center;
-        gap: var(--space-4);
-        flex: 1;
-        
-        .search-input {
-          min-width: 320px;
-          transition: all var(--transition-normal);
-          
-          &:focus {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-glow);
-          }
-        }
-        
-        .search-results {
-          color: var(--text-color-secondary);
-          font-size: var(--text-sm);
-          font-weight: 500;
-        }
-      }
-      
-      .view-controls {
-        display: flex;
-        gap: var(--space-2);
-        
-        .view-toggle {
-          display: flex;
-          gap: var(--space-1);
-          padding: var(--space-1);
-          background: var(--surface-ground);
-          border-radius: var(--radius-lg);
-        }
-      }
-    }
-
-    /* Table Styling */
-    .table-container {
-      background: var(--surface-card);
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      box-shadow: var(--shadow-xl);
-    }
-
-    .machine-name-cell {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      
-      .machine-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: var(--radius-lg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: var(--text-lg);
-        position: relative;
-        overflow: hidden;
-        
-        &::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: var(--gaming-gradient-primary);
-          opacity: 0.8;
-        }
-        
-        &.status-active::before {
-          background: var(--gaming-gradient-success);
-        }
-        
-        &.status-maintenance::before {
-          background: var(--gaming-gradient-secondary);
-        }
-        
-        &.status-inactive::before {
-          background: var(--gaming-gradient-danger);
-        }
-        
-        i {
-          position: relative;
-          z-index: 1;
-        }
-      }
-      
-      .machine-info {
-        .machine-name {
-          display: block;
-          font-weight: 600;
-          color: var(--text-color);
-          margin-bottom: var(--space-1);
-        }
-        
-        .machine-description {
-          display: block;
-          font-size: var(--text-sm);
-          color: var(--text-color-secondary);
-        }
-      }
-    }
-
-    .location-cell {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      
-      .location-icon {
-        color: var(--neon-orange);
-        font-size: var(--text-base);
-      }
-    }
-
-    .games-cell {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-1);
-      
-      .game-tag {
-        font-size: var(--text-xs);
-        font-weight: 600;
-      }
-      
-      .no-games {
-        color: var(--text-color-muted);
-        font-style: italic;
-        font-size: var(--text-sm);
-      }
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: var(--space-1);
-      
-      .action-button {
-        transition: all var(--transition-normal);
-        
-        &:hover {
-          transform: scale(1.1);
-        }
-      }
-    }
-
-    /* Grid Styling */
-    .machines-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-      gap: var(--space-8);
-      
-      .machine-card-container {
-        position: relative;
-      }
-      
-      .machine-card {
-        height: 100%;
-        background: var(--surface-card);
-        border: 1px solid var(--surface-border);
-        border-radius: var(--radius-2xl);
-        overflow: hidden;
-        transition: all var(--transition-normal);
-        position: relative;
-        
-        &::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: var(--gaming-gradient-primary);
-          opacity: 0;
-          transition: opacity var(--transition-normal);
-        }
-        
-        &:hover {
-          transform: translateY(-8px) scale(1.02);
-          box-shadow: var(--shadow-2xl), var(--shadow-glow);
-          border-color: var(--neon-blue);
-          
-          &::before {
-            opacity: 0.03;
-          }
-        }
-        
-        .machine-card-header {
-          text-align: center;
-          padding: var(--space-6);
-          position: relative;
-          background: linear-gradient(135deg, var(--surface-ground), var(--surface-hover));
-          
-          .machine-card-icon {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            border-radius: var(--radius-full);
-            background: var(--gaming-gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            margin: 0 auto var(--space-4) auto;
-            box-shadow: var(--shadow-lg);
-            
-            .games-badge {
-              position: absolute;
-              top: -8px;
-              right: -8px;
-              box-shadow: var(--shadow-md);
-            }
-          }
-          
-          .machine-card-title {
-            margin: 0 0 var(--space-3) 0;
-            font-size: var(--text-xl);
-            font-weight: 700;
-            color: var(--text-color);
-          }
-          
-          .status-tag-card {
-            font-weight: 600;
-          }
-        }
-        
-        .machine-card-description {
-          color: var(--text-color-secondary);
-          font-size: var(--text-sm);
-          line-height: 1.6;
-          margin-bottom: var(--space-4);
-          padding: 0 var(--space-4);
-        }
-        
-        .machine-card-info {
-          padding: 0 var(--space-4) var(--space-4);
-          
-          .info-item {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-4);
-            font-size: var(--text-sm);
-            
-            .location-icon {
-              color: var(--neon-orange);
-            }
-          }
-          
-          .games-list {
-            h4 {
-              margin: 0 0 var(--space-3) 0;
-              font-size: var(--text-sm);
-              font-weight: 600;
-              color: var(--text-color);
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-            }
-            
-            .game-item {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              padding: var(--space-2) var(--space-3);
-              background: var(--surface-hover);
-              border-radius: var(--radius-md);
-              margin-bottom: var(--space-2);
-              font-size: var(--text-sm);
-              transition: all var(--transition-fast);
-              
-              &:hover {
-                background: var(--surface-border);
-                transform: translateX(4px);
-              }
-              
-              .slot-number {
-                font-weight: 700;
-                color: var(--neon-blue);
-                text-transform: uppercase;
-                font-size: var(--text-xs);
-              }
-              
-              .game-name {
-                color: var(--text-color);
-                font-weight: 500;
-              }
-            }
-          }
-          
-          .no-games-card {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-4);
-            background: var(--surface-hover);
-            border-radius: var(--radius-lg);
-            color: var(--text-color-muted);
-            font-size: var(--text-sm);
-            
-            .warning-icon {
-              color: var(--neon-orange);
-              font-size: var(--text-lg);
-            }
-          }
-        }
-        
-        .machine-card-actions {
-          display: flex;
-          gap: var(--space-2);
-          justify-content: center;
-          padding: var(--space-4);
-          background: var(--surface-ground);
-          
-          .card-action-btn {
-            flex: 1;
-            max-width: 100px;
-            transition: all var(--transition-normal);
-            
-            &:hover {
-              transform: translateY(-2px);
-              box-shadow: var(--shadow-lg);
-            }
-          }
-        }
-      }
-    }
-
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: var(--space-20) var(--space-4);
-      
-      .empty-icon {
-        font-size: 4rem;
-        color: var(--neon-blue);
-        margin-bottom: var(--space-6);
-        filter: drop-shadow(var(--shadow-neon));
-      }
-      
-      h3 {
-        margin: 0 0 var(--space-3) 0;
-        color: var(--text-color);
-        font-size: var(--text-xl);
-      }
-      
-      p {
-        margin: 0 0 var(--space-6) 0;
-        color: var(--text-color-secondary);
-      }
-    }
-
-    /* Gaming Buttons */
-    .gaming-button {
-      background: var(--gaming-gradient-primary) !important;
-      border: none !important;
-      color: white !important;
-      font-weight: 600 !important;
-      text-transform: uppercase !important;
-      letter-spacing: 0.05em !important;
-      transition: all var(--transition-normal) !important;
-      position: relative !important;
-      overflow: hidden !important;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
-      }
-      
-      &:hover {
-        transform: translateY(-2px) scale(1.05) !important;
-        box-shadow: var(--shadow-xl), var(--shadow-glow) !important;
-        
-        &::before {
-          left: 100%;
-        }
-      }
-    }
-
-    /* Status Helpers */
-    .status-tag {
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: var(--text-xs);
-      letter-spacing: 0.05em;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .page-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--space-4);
-      }
-      
-      .stats-section {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-4);
-      }
-      
-      .controls-bar {
-        flex-direction: column;
-        gap: var(--space-4);
-        
-        .search-container .search-input {
-          min-width: 100%;
-        }
-      }
-      
-      .machines-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .machine-card-actions {
-        flex-direction: column;
-        
-        .card-action-btn {
-          max-width: none;
-        }
-      }
-    }
-
-    @media (max-width: 480px) {
-      .stats-section {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Gaming Theme Overrides */
-    :host ::ng-deep {
-      .machines-table {
-        background: var(--surface-card);
-        border-radius: var(--radius-xl);
-        overflow: hidden;
-        
-        .p-datatable-thead > tr > th {
-          background: var(--surface-ground);
-          border-bottom: 2px solid var(--neon-blue);
-          font-weight: 700;
-          color: var(--text-color);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          font-size: var(--text-sm);
-        }
-        
-        .p-datatable-tbody > tr {
-          transition: all var(--transition-fast);
-          
-          &:hover {
-            background: var(--surface-hover);
-            transform: translateX(4px);
-            box-shadow: var(--shadow-md);
-          }
-        }
-      }
-      
-      .gaming-confirm-dialog {
-        border-radius: var(--radius-xl);
-        overflow: hidden;
-        
-        .p-dialog-header {
-          background: var(--gaming-gradient-primary);
-          color: white;
-        }
-      }
-    }
-  `]
+  styleUrls: ['./machines-list.component.scss']
 })
 export class MachinesListComponent implements OnInit {
   // Services injectés avec inject()
@@ -1035,7 +629,7 @@ export class MachinesListComponent implements OnInit {
   protected readonly searchQuery = signal('');
   protected readonly itemsPerPage = signal(10);
   
-  // Computed values avec logique métier
+  // Computed values avec logique métier améliorée
   protected readonly enrichedMachines = computed(() => {
     return this.machines().map(machine => this.enrichMachine(machine));
   });
@@ -1054,7 +648,8 @@ export class MachinesListComponent implements OnInit {
     return machines.filter(machine => 
       machine.nom.toLowerCase().includes(query) ||
       machine.description?.toLowerCase().includes(query) ||
-      machine.localisation?.toLowerCase().includes(query)
+      machine.localisation?.toLowerCase().includes(query) ||
+      machine.games?.some(game => game.nom.toLowerCase().includes(query))
     );
   });
   
@@ -1097,11 +692,13 @@ export class MachinesListComponent implements OnInit {
   }
 
   /**
-   * Enrichit une machine avec des métadonnées calculées
+   * Enrichit une machine avec des métadonnées calculées (amélioré)
    */
   private enrichMachine(machine: Arcade): EnrichedArcade {
     const gamesCount = machine.games?.length || 0;
-    const status = this.calculateMachineStatus(machine);
+    const activeSlots = machine.games?.length || 0;
+    const hasBothSlots = activeSlots === 2;
+    const status = this.calculateMachineStatus(machine, activeSlots);
     const utilizationRate = this.calculateUtilizationRate(machine);
     
     return {
@@ -1110,20 +707,25 @@ export class MachinesListComponent implements OnInit {
       status,
       utilization_rate: utilizationRate,
       game1_name: machine.games?.find(g => g.slot_number === 1)?.nom,
-      game2_name: machine.games?.find(g => g.slot_number === 2)?.nom
+      game2_name: machine.games?.find(g => g.slot_number === 2)?.nom,
+      has_both_slots: hasBothSlots,
+      active_slots: activeSlots
     };
   }
 
   /**
-   * Calcule le statut d'une machine selon la logique métier
+   * Calcule le statut d'une machine selon la logique métier améliorée
    */
-  private calculateMachineStatus(machine: Arcade): MachineStatus {
-    if (!machine.games || machine.games.length === 0) {
+  private calculateMachineStatus(machine: Arcade, activeSlots: number): MachineStatus {
+    if (activeSlots === 0) {
       return 'inactive';
+    } else if (activeSlots === 1) {
+      return 'partial';
+    } else if (activeSlots === 2) {
+      return 'active';
     }
     
-    // Logique métier pour déterminer le statut
-    // Ici on peut ajouter plus de critères (dernière activité, etc.)
+    // Logique additionnelle pour maintenance si nécessaire
     return 'active';
   }
 
@@ -1199,12 +801,17 @@ export class MachinesListComponent implements OnInit {
    * Exécute la suppression d'une machine
    */
   private executeDeletion(id: number): void {
-    // TODO: Implémenter la suppression via le service
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Succès',
-      detail: 'Borne supprimée avec succès'
+    this.arcadesService.deleteArcade(id).subscribe({
+      next: () => {
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: 'Borne supprimée avec succès'
+          });
+      },
+      error: (error) => this.handleError('suppression', error)
     });
+    
   }
 
   /**
@@ -1220,7 +827,7 @@ export class MachinesListComponent implements OnInit {
     this.loading.set(false);
   }
 
-  // Méthodes utilitaires pour l'affichage
+  // Méthodes utilitaires pour l'affichage améliorées
   protected getMachineIconClass(status: MachineStatus): string {
     return `machine-icon status-${status}`;
   }
@@ -1229,16 +836,18 @@ export class MachinesListComponent implements OnInit {
     const labels = {
       active: 'Active',
       inactive: 'Inactive', 
-      maintenance: 'Maintenance'
+      maintenance: 'Maintenance',
+      partial: 'Partielle'
     };
     return labels[status];
   }
 
-  protected getStatusSeverity(status: MachineStatus): 'success' | 'warning' | 'danger' {
+  protected getStatusSeverity(status: MachineStatus): 'success' | 'warning' | 'danger' | 'info' {
     const severities = {
       active: 'success' as const,
       maintenance: 'warning' as const,
-      inactive: 'danger' as const
+      inactive: 'danger' as const,
+      partial: 'info' as const
     };
     return severities[status];
   }
@@ -1247,12 +856,37 @@ export class MachinesListComponent implements OnInit {
     const icons = {
       active: 'pi-check-circle',
       maintenance: 'pi-wrench',
-      inactive: 'pi-times-circle'
+      inactive: 'pi-times-circle',
+      partial: 'pi-info-circle'
     };
     return icons[status];
   }
 
   protected getSlotSeverity(slotNumber: number): 'info' | 'success' {
     return slotNumber === 1 ? 'info' : 'success';
+  }
+
+  // Nouvelles méthodes utilitaires pour la gestion des slots
+  protected getGameForSlot(machine: EnrichedArcade, slotNumber: number): GameOnArcade | undefined {
+    return machine.games?.find(game => game.slot_number === slotNumber);
+  }
+
+  protected getSlotClass(machine: EnrichedArcade, slotNumber: number): string {
+    const hasGame = this.getGameForSlot(machine, slotNumber);
+    return `slot-item ${hasGame ? 'slot-occupied' : 'slot-empty'}`;
+  }
+
+  protected getSlotStatusClass(machine: EnrichedArcade, slotNumber: number): string {
+    const hasGame = this.getGameForSlot(machine, slotNumber);
+    return hasGame ? 'status-occupied' : 'status-empty';
+  }
+
+  protected getSlotStatusLabel(machine: EnrichedArcade, slotNumber: number): string {
+    const hasGame = this.getGameForSlot(machine, slotNumber);
+    return hasGame ? 'Occupé' : 'Libre';
+  }
+
+  protected formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('fr-FR');
   }
 }

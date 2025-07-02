@@ -1,0 +1,24 @@
+<div class="notification-demo">
+  <h1>🎮 Système de Notifications Gaming</h1>
+  <div class="demo-controls">
+    <button class="gaming-btn neon-green" (click)="addNotification('success')">Succès</button>
+    <button class="gaming-btn arcade-red" (click)="addNotification('error')">Erreur</button>
+    <button class="gaming-btn neon-orange" (click)="addNotification('warning')">Attention</button>
+    <button class="gaming-btn neon-purple" (click)="addNotification('achievement')">Achievement</button>
+    <button class="gaming-btn neon-blue" (click)="addNotification('level-up')">Level Up!</button>
+  </div>
+  <div class="notifications-container">
+    <div 
+      *ngFor="let notification of notifications()"
+      class="notification {{getColorClass(notification.type)}} {{notification.type}}"
+    >
+      <div class="notification-header">
+        <div class="notification-icon"><span>{{notification.icon}}</span></div>
+        <h3 class="notification-title">{{notification.title}}</h3>
+      </div>
+      <p class="notification-message">{{notification.message}}</p>
+      <span *ngIf="notification.points" class="notification-points">{{notification.points}} XP</span>
+      <button class="notification-close" (click)="removeNotification(notification.id)">✕</button>
+    </div>
+  </div>
+</div>

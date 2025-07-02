@@ -37,5 +37,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/parties/parties.routes').then(m => m.PARTIES_ROUTES)
   },
+
+  {
+    path: 'promos',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/promos/promos.routes').then(m => m.PROMOS_ROUTES)
+  },
+
+  {
+    path: 'reservations',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/reservations/reservations.routes').then(m => m.RESERVATIONS_ROUTES)
+  },
   { path: '**', redirectTo: '' }
 ];

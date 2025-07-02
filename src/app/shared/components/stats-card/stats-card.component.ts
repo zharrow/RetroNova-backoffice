@@ -35,6 +35,7 @@ export interface StatsData {
   readonly trend?: TrendData;
   readonly subtitle?: string;
   readonly loading?: boolean;
+  readonly format?: 'number' | 'currency' | 'percentage' | 'fileSize' | 'duration' | 'shortNumber';
 }
 
 /**
@@ -147,7 +148,13 @@ export interface StatsData {
     }
 
     .stats-content {
-      @apply relative flex items-start gap-4 p-6 h-full;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.5rem;
+      height: 100%;
+      // @apply relative flex items-start gap-4 p-6 h-full;
     }
 
     .stats-icon-container {

@@ -12,6 +12,7 @@ export const ARCADE_MACHINES_ROUTES: Routes = [
       { path: '', component: MachinesListComponent },
       { path: 'new', component: MachineFormComponent },
       { path: 'edit/:id', component: MachineFormComponent },
+      { path: 'detail/:id', component: MachineDetailComponent },
       { path: ':id', component: MachineDetailComponent }
     ]
   }

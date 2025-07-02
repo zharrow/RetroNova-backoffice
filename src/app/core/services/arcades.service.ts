@@ -79,6 +79,19 @@ export class ArcadesService {
   }
 
   /**
+   * Supprime une borne (admin)
+   */
+  deleteArcade(id: number): Observable<void> {
+    return this.apiService.delete<void>(`/admin/arcades/${id}`).pipe(
+      tap(() => {
+        this.arcadesSignal.update(arcades => 
+          arcades.filter(arcade => arcade.id !== id)
+        );
+      })
+    );
+  }
+
+  /**
    * Efface le cache des bornes
    */
   clearCache(): void {
