@@ -21,10 +21,12 @@ import { NotificationService } from '../../../core/services/notification.service
       </div>
       <div class="user-info">
         <span>{{ userName() }}</span>
-        <button pButton pRipple type="button" icon="pi pi-sign-out" 
-                class="p-button-rounded p-button-text" 
+        <button pButton pRipple type="button" 
+                class="p-button-rounded p-button-text logout-button" 
                 (click)="logout()"
-                [loading]="isLoggingOut()"></button>
+                [loading]="isLoggingOut()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
       </div>
     </div>
   `,
@@ -33,10 +35,11 @@ import { NotificationService } from '../../../core/services/notification.service
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 1rem;
+      padding: 0 1.5rem;
       height: 60px;
       background-color: var(--surface-card);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid var(--surface-border);
     }
     
     .logo a {
@@ -46,19 +49,38 @@ import { NotificationService } from '../../../core/services/notification.service
     
     .logo h1 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 1.375rem;
       font-weight: 600;
+      letter-spacing: -0.025em;
     }
     
     .user-info {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 1rem;
     }
     
     .user-info span {
       font-weight: 500;
       color: var(--text-color);
+      font-size: 0.875rem;
+    }
+    
+    .logout-button {
+      color: var(--text-color-secondary);
+      transition: color 0.2s;
+      
+      i {
+        font-size: 1.125rem;
+      }
+    }
+    
+    .logout-button:hover {
+      color: var(--danger-color);
+    }
+    
+    :host ::ng-deep .logout-button .p-button-label {
+      display: none;
     }
   `]
 })
@@ -73,7 +95,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     if (user) {
-      this.userName.set(user.nom || user.prenom);
+      this.userName.set(user.nom || user.prenom)
     }
   }
 

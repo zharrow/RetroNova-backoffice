@@ -32,7 +32,7 @@ interface DashboardCard {
       
       @if (isLoading()) {
         <div class="loading-container">
-          <!-- <app-loader size="large"></app-loader> -->
+          <app-loader size="large" message="Chargement des données..."></app-loader>
         </div>
       }
       
@@ -42,7 +42,7 @@ interface DashboardCard {
             <p-card styleClass="dashboard-card">
               <ng-template pTemplate="header">
                 <div class="card-header" [style.background-color]="card.color">
-                  <i [class]="'pi ' + card.icon"></i>
+                  <i [class]="card.icon"></i>
                   <h3>{{ card.title }}</h3>
                 </div>
               </ng-template>
@@ -102,7 +102,7 @@ export class HomeComponent implements OnInit {
     const cards: DashboardCard[] = [
       {
         title: 'Utilisateurs',
-        icon: 'pi-users',
+        icon: 'fas fa-users',
         value: data.users.length,
         link: '/users',
         linkText: 'Voir les utilisateurs',
@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit {
       },
       {
         title: 'Bornes d\'arcade',
-        icon: 'pi-desktop',
+        icon: 'fas fa-desktop',
         value: data.machines.length,
         link: '/arcade-machines',
         linkText: 'Gérer les bornes',
@@ -118,7 +118,7 @@ export class HomeComponent implements OnInit {
       },
       {
         title: 'Jeux',
-        icon: 'pi-play',
+        icon: 'fas fa-gamepad',
         value: data.games.length,
         link: '/games',
         linkText: 'Voir les jeux',
@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
       },
       {
         title: 'Parties en cours',
-        icon: 'pi-ticket',
+        icon: 'fas fa-ticket',
         value: data.activeParties.length,
         link: '/parties',
         linkText: 'Voir les parties',

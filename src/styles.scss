@@ -6,6 +6,8 @@
 /* Variables CSS personnalisées */
 :root {
   --primary-color: #{$primary-color};
+  --primary-color-dark: #{$primary-color-dark};
+  --primary-color-light: #{$primary-color-light};
   --primary-color-text: #{$primary-color-text};
   --surface-ground: #{$surface-ground};
   --surface-section: #{$surface-section};
@@ -31,6 +33,7 @@
   margin: 0;
   padding: 0;
 }
+
 
 body {
   font-family: var(--font-family);

@@ -1,5 +1,6 @@
 // src/app/features/games/pages/games-list/games-list.component.ts
 
+
 import { Component, OnInit, inject, signal, viewChild, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -518,6 +519,15 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
       }
     }
     
+    .mr-1 { margin-right: 0.25rem; }
+    .mr-2 { margin-right: 0.5rem; }
+    .ml-1 { margin-left: 0.25rem; }
+    
+    .sort-icon {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+    }
+    
     :host ::ng-deep {
       .games-table {
         .p-datatable-thead > tr > th {
@@ -569,6 +579,28 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
       
       .games-grid {
         grid-template-columns: 1fr;
+      }
+      
+      .p-button.p-button-rounded {
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        
+        i {
+          font-size: 0.875rem;
+        }
+      }
+      
+      .p-button.p-button-text:not(:disabled):hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-success:not(:disabled):hover {
+        background-color: rgba(76, 175, 80, 0.04);
+      }
+      
+      .p-button.p-button-text.p-button-danger:not(:disabled):hover {
+        background-color: rgba(244, 67, 54, 0.04);
       }
     }
   `]
