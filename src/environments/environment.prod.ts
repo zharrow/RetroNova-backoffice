@@ -1,12 +1,13 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://api.your-production-domain.com', // URL de production
+  production: false,
+  apiUrl: 'https://apitest.retronova.fr/api/v1',
   firebase: {
-    apiKey: "your-api-key",
-    authDomain: "your-auth-domain.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project-id.appspot.com",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id"
+    apiKey: "AIzaSyDcXyBted7LnNaaj6l50rufNy6VLvQpI3o",
+    authDomain: "retronova-admin.firebaseapp.com",
+    projectId: "retronova-admin",
+    storageBucket: "retronova-admin.firebasestorage.app",
+    messagingSenderId: "835821831654",
+    appId: "1:835821831654:web:2c26315cefda0c67f40227",
+    measurementId: "G-QF76X0P3RJ"
   }
 };
