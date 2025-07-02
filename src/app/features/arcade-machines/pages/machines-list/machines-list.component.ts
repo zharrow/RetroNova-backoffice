@@ -443,7 +443,7 @@ class MachineStatsCalculator {
                           pTooltip="Supprimer" 
                           tooltipPosition="top"
                           class="action-button hover-scale"
-                          (click)="confirmDelete(machine)">
+                          (click)="confirmDelete(machine)">🗑️
                         </button>
                       </div>
                     </td>

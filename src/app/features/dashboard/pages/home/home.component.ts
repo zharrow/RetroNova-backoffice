@@ -32,7 +32,7 @@ interface DashboardCard {
       
       @if (isLoading()) {
         <div class="loading-container">
-          <app-loader size="large" message="Chargement des données..."></app-loader>
+          <!-- <app-loader size="large" message="Chargement des données..."></app-loader> -->
         </div>
       }
       
