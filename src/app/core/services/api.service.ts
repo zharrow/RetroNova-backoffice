@@ -46,4 +46,18 @@ export class ApiService {
     
     return this.http.delete<T>(`${this.baseUrl}${endpoint}`, { params: httpParams });
   }
+
+  getBlob(endpoint: string, params?: any): Observable<Blob> {
+    let httpParams = new HttpParams();
+    
+    if (params) {
+      Object.keys(params).forEach(key => {
+        if (params[key] !== undefined && params[key] !== null) {
+          httpParams = httpParams.set(key, params[key].toString());
+        }
+      });
+    }
+    
+    return this.http.get(`${this.baseUrl}${endpoint}`, { params: httpParams, responseType: 'blob' });
+  }
 }

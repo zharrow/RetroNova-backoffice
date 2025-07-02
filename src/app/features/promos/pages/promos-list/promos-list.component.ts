@@ -775,7 +775,7 @@ export class PromosListComponent implements OnInit {
    */
   protected exportPromos(): void {
     this.promosService.exportPromos().subscribe({
-      next: (blob) => {
+      next: (blob: any) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -789,7 +789,7 @@ export class PromosListComponent implements OnInit {
           detail: 'Les codes promos ont été exportés avec succès'
         });
       },
-      error: (error) => this.handleError('export', error)
+      error: (error:any) => this.handleError('export', error)
     });
   }
 
@@ -829,7 +829,7 @@ export class PromosListComponent implements OnInit {
         });
         this.refreshPromos();
       },
-      error: (error) => this.handleError('suppression', error)
+      error: (error: any) => this.handleError('suppression', error)
     });
   }
 

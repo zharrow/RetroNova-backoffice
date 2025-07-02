@@ -125,6 +125,8 @@ export class SidebarComponent {
     { label: 'Jeux', icon: 'pi pi-play', routerLink: '/games' },
     { label: 'Utilisateurs', icon: 'pi pi-users', routerLink: '/users' },
     { label: 'Parties', icon: 'pi pi-ticket', routerLink: '/parties' },
-    // { label: 'Statistiques', icon: 'pi pi-chart-bar', routerLink: '/statistics' }
+    { label: 'Promos', icon: 'pi pi-tag', routerLink: '/promos' },
+    // { label: 'Configurations', icon: 'pi pi-cog', routerLink: '/settings' },
+    { label: 'Statistiques', icon: 'pi pi-chart-bar', routerLink: '/statistics' }
   ]);
 }
