@@ -73,9 +73,9 @@ export interface StatsData {
           <div class="stats-info">
             <h3 class="stats-title">{{ data().title }}</h3>
             <div class="stats-value-container">
-              <span [class]="valueClasses()">{{ formattedValue() }}</span>
+              <p [class]="valueClasses()">{{ formattedValue() }}</p>
               @if (data().subtitle) {
-                <span class="stats-subtitle">{{ data().subtitle }}</span>
+                <p class="stats-subtitle">{{ data().subtitle }}</p>
               }
             </div>
 

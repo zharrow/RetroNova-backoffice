@@ -94,7 +94,7 @@ class PromoStatsCalculator {
         value: active,
         icon: 'pi-check-circle',
         color: 'success',
-        subtitle: `${Math.round((active / total) * 100)}% du total`
+        subtitle: `${Math.round((active / total) * 100) ? Math.round((active / total) * 100): 0 }% du total`
       },
       {
         title: 'Utilisations totales',

@@ -301,8 +301,7 @@ class PromoCodeValidators {
 
               <!-- Messages d'erreur -->
               @if (errorMessages().length > 0) {
-                <p-messages 
-                  [value]="errorMessages()" 
+                <p-messages
                   [enableService]="false"
                   styleClass="form-messages">
                 </p-messages>
